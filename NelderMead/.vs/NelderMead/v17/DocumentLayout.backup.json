@@ -3,20 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\Token.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|solutionrelative:NelderMead\\Token.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\NelderMead.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|solutionrelative:NelderMead\\NelderMead.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|solutionrelative:NelderMead\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\NelderMead.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|solutionrelative:NelderMead\\NelderMead.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|solutionrelative:NelderMead\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\NelderMead.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{6E39C989-4643-4A6D-95D2-C4CE5EA354EC}|NelderMead\\NelderMead.vcxproj|solutionrelative:NelderMead\\NelderMead.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,45 +30,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Token.h",
-              "DocumentMoniker": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\Token.h",
-              "RelativeDocumentMoniker": "NelderMead\\Token.h",
-              "ToolTip": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\Token.h",
-              "RelativeToolTip": "NelderMead\\Token.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-03-18T16:34:28.422Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "NelderMead.cpp",
               "DocumentMoniker": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\NelderMead.cpp",
               "RelativeDocumentMoniker": "NelderMead\\NelderMead.cpp",
               "ToolTip": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\NelderMead.cpp",
               "RelativeToolTip": "NelderMead\\NelderMead.cpp",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAPMAAAAAAAAAAAAYwA0BAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-11T15:00:40.533Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "NelderMead.h",
               "DocumentMoniker": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\NelderMead.h",
               "RelativeDocumentMoniker": "NelderMead\\NelderMead.h",
               "ToolTip": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\NelderMead.h",
               "RelativeToolTip": "NelderMead\\NelderMead.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA5AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-03-11T14:55:07.938Z"
+              "WhenOpened": "2025-03-11T14:55:07.938Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "dllmain.cpp",
               "DocumentMoniker": "C:\\Users\\dsaut\\source\\repos\\NelderMead\\NelderMead\\dllmain.cpp",
               "RelativeDocumentMoniker": "NelderMead\\dllmain.cpp",
@@ -80,7 +64,8 @@
               "RelativeToolTip": "NelderMead\\dllmain.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-11T14:53:28.439Z"
+              "WhenOpened": "2025-03-11T14:53:28.439Z",
+              "EditorCaption": ""
             }
           ]
         }

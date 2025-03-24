@@ -126,13 +126,15 @@ private:
     {
         if (expression_parsed[pos].type == Number)
         {
+            double vlaue = expression_parsed[pos].value;
             next_pos();
-            return expression_parsed[pos - 1].value;
+            return vlaue;
         }
         if (expression_parsed[pos].type == Function)
         {
+            
+            string func_name = expression_parsed[pos].expression;
             next_pos();
-            string func_name = expression_parsed[pos - 1].expression;
             double arg = calc_end();
 
 
@@ -144,8 +146,9 @@ private:
         }
         if (expression_parsed[pos].type == Variable)
         {
+            double value = var_nums["x" + to_string(expression_parsed[pos].index)];
             next_pos();
-            return var_nums["x" + to_string(expression_parsed[pos - 1].index)];
+            return value;
         }
         if (expression_parsed[pos].type == LParenthesis)
         {
