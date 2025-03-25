@@ -164,7 +164,7 @@ private:
         if (expression_parsed[pos].type == Minus)
         {
             next_pos();
-            return -calc_exp_raise();
+            return -calc_end();
         }
         throw runtime_error("Unexpected token");
     }

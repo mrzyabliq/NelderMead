@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "../NelderMead/NelderMead.h"
+#include "NelderMead.h"
 
 TEST(ParserSimpleTest, CreateAndDestroy) {
     ParserHandle* parser = CreateParser("x1+1");
