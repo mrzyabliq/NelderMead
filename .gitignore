@@ -1,0 +1,51 @@
+## Игнорировать пользовательские файлы Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Игнорировать результаты сборки
+bin/
+obj/
+[Bb]uild/
+x64/
+x86/
+[Dd]ebug/
+[Rr]elease/
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.exp
+*.obj
+*.cache
+
+## Файлы резервных копий и временные файлы
+*.bak
+*.tmp
+*.~*
+*~
+
+## Файлы пакетов NuGet
+packages/
+*.nupkg
+NuGet.exe
+
+## Файлы ReSharper
+_ReSharper.*
+*.resharper
+
+## Файлы Rider
+.idea/
+*.idea
+
+## Прочие специфичные файлы
+*.log
+*.tlog
+*.lastbuildstate
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
