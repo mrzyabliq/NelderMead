@@ -1,10 +1,15 @@
 #pragma once
-#ifdef NELDERMEAD_EXPORTS
-#define NELDERMEAD_API __declspec(dllexport)
+#ifdef _WIN32
+    #ifdef NELDERMEAD_EXPORTS
+        #define NELDERMEAD_API __declspec(dllexport)
+    #else
+        #define NELDERMEAD_API __declspec(dllimport)
+    #endif
 #else
-#define NELDERMEAD_API __declspec(dllimport)
+    #define NELDERMEAD_API  // Пустой макрос для Linux
 #endif
-using namespace std;
+
+#include <string>
 extern "C" {
     // Handle для работы с парсером
     struct ParserHandle;
