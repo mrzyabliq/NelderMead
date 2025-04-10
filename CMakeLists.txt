@@ -5,6 +5,11 @@ project(NelderMeadProject LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Настройка экспорта символов
+if(WIN32)
+    add_definitions(-DNELDERMEAD_EXPORTS)  # Для Windows DLL
+endif()
+
 # Ищем GoogleTest (через find_package)
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)  # GTest может зависеть от потоков
@@ -12,7 +17,7 @@ find_package(Threads REQUIRED)  # GTest может зависеть от пот�
 # --- Сборка библиотеки NelderMead ---
 add_library(NelderMead SHARED 
     src/NelderMead.cpp
-    src/library_init.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}src/library_init.cpp
     src/pch.cpp
 )
 
