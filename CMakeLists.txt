@@ -17,7 +17,7 @@ find_package(Threads REQUIRED)  # GTest может зависеть от пот�
 # --- Сборка библиотеки NelderMead ---
 add_library(NelderMead SHARED 
     src/NelderMead.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}src/library_init.cpp
+    src/library_init.cpp
     src/pch.cpp
 )
 
