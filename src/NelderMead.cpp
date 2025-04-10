@@ -252,24 +252,24 @@ struct ParserHandle {
 };
 
 extern "C" {
-    NELDERMEAD_API ParserHandle* CreateParser(const char* expression) {
+    ParserHandle* CreateParser(const char* expression) {
       
             return new ParserHandle(expression);
     }
 
-    NELDERMEAD_API void SetVariable(ParserHandle* handle, const char* name, double value) {
+    void SetVariable(ParserHandle* handle, const char* name, double value) {
         if (handle) {
             handle->variables[name] = value;
         }
     }
 
-    NELDERMEAD_API double Evaluate(ParserHandle* handle) {
+    double Evaluate(ParserHandle* handle) {
         if (!handle) return NAN;
          return handle->parser.calc(handle->variables);
       
     }
 
-    NELDERMEAD_API void DestroyParser(ParserHandle* handle) {
+    void DestroyParser(ParserHandle* handle) {
         delete handle;
     }
 }
