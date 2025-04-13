@@ -7,6 +7,7 @@
 #include <vector>
 #include <stdexcept>
 #include <unordered_map>
+#include <cmath>
 using namespace std;
 
 enum Typess {
@@ -118,7 +119,7 @@ private:
         {
             next_pos();
             double pod_res = calc_end();
-            res = pow(res, pod_res);
+            res = std::pow(res, pod_res);
         }
         return res;
     }
@@ -138,11 +139,11 @@ private:
             double arg = calc_end();
 
 
-            if (func_name == "sin") return sin(arg);
-            if (func_name == "cos") return cos(arg);
-            if (func_name == "tan") return tan(arg);
-            if (func_name == "exp") return exp(arg);
-            if (func_name == "abs") return abs(arg);
+            if (func_name == "sin") return std::sin(arg);
+            if (func_name == "cos") return std::cos(arg);
+            if (func_name == "tan") return std::tan(arg);
+            if (func_name == "exp") return std::exp(arg);
+            if (func_name == "abs") return std::abs(arg);
         }
         if (expression_parsed[pos].type == Variable)
         {
@@ -251,24 +252,24 @@ struct ParserHandle {
 };
 
 extern "C" {
-    NELDERMEAD_API ParserHandle* CreateParser(const char* expression) {
+    ParserHandle* CreateParser(const char* expression) {
       
             return new ParserHandle(expression);
     }
 
-    NELDERMEAD_API void SetVariable(ParserHandle* handle, const char* name, double value) {
+    void SetVariable(ParserHandle* handle, const char* name, double value) {
         if (handle) {
             handle->variables[name] = value;
         }
     }
 
-    NELDERMEAD_API double Evaluate(ParserHandle* handle) {
+    double Evaluate(ParserHandle* handle) {
         if (!handle) return NAN;
          return handle->parser.calc(handle->variables);
       
     }
 
-    NELDERMEAD_API void DestroyParser(ParserHandle* handle) {
+    void DestroyParser(ParserHandle* handle) {
         delete handle;
     }
 }
