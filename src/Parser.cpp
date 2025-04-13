@@ -1,4 +1,4 @@
-#include "Parser.h"
+#include "../include/Parser.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,34 +10,13 @@
 
 #include "pch.h"
 using namespace std;
-enum class Typess {
-    Number,
-    Variable,
-    Plus,
-    Minus,
-    Multiply,
-    Divide,
-    LParenthesis,
-    RParenthesis,
-    Function,
-    Argument,
-    Raise
-  };
-  struct Token {
-    Typess type;
-    double value;
-    int index;
-    string expression;
-  };
-  class Parser {
-   public:
-    Parser(string expression) {
+
+Parser::Parser(string expression) {
       this->expression = expression;
       Parse();
     }
-    Parser() {}
   
-    double calc(unordered_map<string, double> variables) {
+    double Parser::calc(unordered_map<string, double> variables) {
       pos = 0;
       if (variables.size() != num_of_variables)
         throw runtime_error("Invalid input");
@@ -46,14 +25,8 @@ enum class Typess {
   
       return result;
     }
-    string expression;
-    vector<Token> expression_parsed;
-    int num_of_variables = expression_parsed.size();
-  
-   private:
-    unordered_map<string, double> var_nums;
-    int pos;
-    void Parse() {
+    
+    void Parser::Parse() {
       int cur_pos = 0;
       while (cur_pos < this->expression.size()) {
         char c = expression[cur_pos];
@@ -93,8 +66,10 @@ enum class Typess {
         }
       }
     }
-    void next_pos() { pos = pos < expression_parsed.size() - 1 ? pos + 1 : pos; }
-    double calc_exp_plus() {
+
+    void Parser::next_pos() { pos = pos < expression_parsed.size() - 1 ? pos + 1 : pos; }
+
+    double Parser::calc_exp_plus() {
       double res = calc_exp_mult();
       while (expression_parsed[pos].type == Typess::Plus ||
              expression_parsed[pos].type == Typess::Minus) {
@@ -111,7 +86,8 @@ enum class Typess {
       }
       return res;
     }
-    double calc_exp_mult() {
+
+    double Parser::calc_exp_mult() {
       double res = calc_exp_raise();
       while (expression_parsed[pos].type == Typess::Multiply ||
              expression_parsed[pos].type == Typess::Divide) {
@@ -126,7 +102,8 @@ enum class Typess {
       }
       return res;
     }
-    double calc_exp_raise() {
+
+    double Parser::calc_exp_raise() {
       double res = calc_end();
       while (expression_parsed[pos].type == Typess::Raise) {
         next_pos();
@@ -135,7 +112,8 @@ enum class Typess {
       }
       return res;
     }
-    double calc_end() {
+
+    double Parser::calc_end() {
       if (expression_parsed[pos].type == Typess::Number) {
         double vlaue = expression_parsed[pos].value;
         next_pos();
@@ -172,7 +150,8 @@ enum class Typess {
       }
       throw runtime_error("Unexpected token");
     }
-    int parse_num(int cur_pos) {
+
+    int Parser::parse_num(int cur_pos) {
       double num = expression[cur_pos] - '0';
       bool dot = false;
       int nums_after_dot = 1;
@@ -198,7 +177,8 @@ enum class Typess {
       expression_parsed.push_back({Typess::Number, num});
       return cur_pos;
     }
-    int parse_expression(int cur_pos) {
+
+    int Parser::parse_expression(int cur_pos) {
       int start_pos = cur_pos;
       if (expression[cur_pos] == 'x') {
         int num = 0;
@@ -221,7 +201,8 @@ enum class Typess {
   
       return cur_pos;
     }
-    int parse_arg(int cur_pos) {
+
+    int Parser::parse_arg(int cur_pos) {
       while (cur_pos < expression.size() &&
              (expression[cur_pos] == '(' || expression[cur_pos] == ' '))
         cur_pos++;
@@ -234,7 +215,6 @@ enum class Typess {
       expression_parsed.push_back({Typess::Argument, 0.0, 0, sub_expression});
       return cur_pos;
     }
-  };
   
   struct ParserHandle {
     std::unordered_map<std::string, double> variables;

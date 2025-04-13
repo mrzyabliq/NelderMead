@@ -4,136 +4,136 @@
 #include <iostream>
 
 TEST(ParserSimpleTest, CreateAndDestroy) {
-    Parser parser = Parser("x1+1");
-    ASSERT_NE(parser, nullptr);
+    Parser parser("x1+1");
+    ASSERT_NE(parser.num_of_variables, 0);
 }
 
 TEST(ParserSimpleTest, SimpleEvaluation1) {
-    Parser parser = Parser("x1-x2+x3");
+    Parser parser("x1-x2+x3");
     std::unordered_map<std::string, double> variables = {{"x1", 50}, {"x2", 20}, {"x3", 70}};
-    EXPECT_DOUBLE_EQ(calc(variables), 100.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 100.0);
 }
 
 TEST(ParserSimpleTest, SimpleEvaluation2) {
-    Parser parser = Parser("x1+50");
+    Parser parser("x1+50");
     std::unordered_map<std::string, double> variables = {{"x1", 10.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 60.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 60.0);
 }
 
 TEST(ParserSimpleTest, SimpleEvaluation3) {
-    Parser parser = Parser("x1-x2");
+    Parser parser("x1-x2");
     std::unordered_map<std::string, double> variables = {{"x1", 10}, {"x2", 30}};
-    EXPECT_DOUBLE_EQ(calc(variables), -20.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), -20.0);
 }
 
 TEST(ParserSimpleTest, BasicMathOperations) {
-    Parser parser = Parser("(x1 + x2) * (x3 - x4) / x5");
+    Parser parser("(x1 + x2) * (x3 - x4) / x5");
     std::unordered_map<std::string, double> variables = {{"x1", 3.0}, {"x2", 2.0}, {"x3", 7.0}, {"x4", 2.0}, {"x5", 2.5}};
-    EXPECT_DOUBLE_EQ(calc(variables), 10.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 10.0);
 }
 
 TEST(ParserSimpleTest, UnaryMinus) {
-    Parser parser = Parser("-x1 + x2");
+    Parser parser("-x1 + x2");
     std::unordered_map<std::string, double> variables = {{"x1", 5.0}, {"x2", 10.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 5.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 5.0);
 }
 
 // Тест на константные выражения
 TEST(ParserSimpleTest, ConstantExpressions) {
-    Parser parser = Parser("2 + 3 * 5");
-    EXPECT_DOUBLE_EQ(calc(variables), 17.0);
+    Parser parser("2 + 3 * 5");
+    EXPECT_DOUBLE_EQ(parser.calc({}), 17.0);
 
 }
 
 // Тесты на математические функции
 TEST(ParserSimpleTest, MathFunctions) {
-    Parser parser = Parser("sin(x1) + cos(x2) + exp(x3) + abs(x4)");
+    Parser parser("sin(x1) + cos(x2) + exp(x3) + abs(x4)");
     std::unordered_map<std::string, double> variables = {{"x1", 0.0}, {"x2", 0.0}, {"x3", 0.0}, {"x4", -2.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 4.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 4.0);
 }
 
 TEST(ParserSimpleTest, Sqrt) {
-    Parser parser = Parser("sqrt(x1)");
+    Parser parser("sqrt(x1)");
     std::unordered_map<std::string, double> variables = {{"x1", 9.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 3.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 3.0);
 }
 
 // Тест на базовый приоритет операций (умножение перед сложением)
 TEST(ParserPrecedenceTest, MultiplicationBeforeAddition) {
-    Parser parser = Parser("x1 + x2 * x3");
+    Parser parser("x1 + x2 * x3");
     std::unordered_map<std::string, double> variables = {{"x1", 1.0}, {"x2", 2.0}, {"x3", 3.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 7.0); // 1 + (2*3) = 7, а не (1+2)*3=9
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 7.0); // 1 + (2*3) = 7, а не (1+2)*3=9
 }
 
 // Тест на приоритет деления перед сложением
 TEST(ParserPrecedenceTest, DivisionBeforeAddition) {
-    Parser parser = Parser("x1 + x2 / x3");
+    Parser parser("x1 + x2 / x3");
     std::unordered_map<std::string, double> variables = {{"x1", 1.0}, {"x2", 6.0}, {"x3", 2.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 4.0); // 1 + (6/2) = 4, а не (1+6)/2=3.5
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 4.0); // 1 + (6/2) = 4, а не (1+6)/2=3.5
 }
 
 // Тест на влияние скобок на приоритет
 TEST(ParserPrecedenceTest, ParenthesesOverride) {
-    Parser parser = Parser("(x1 + x2) * x3");
+    Parser parser("(x1 + x2) * x3");
     std::unordered_map<std::string, double> variables = {{"x1", 1.0}, {"x2", 2.0}, {"x3", 3.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 9.0); // (1+2)*3 = 9, а не 1+(2*3)=7
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 9.0); // (1+2)*3 = 9, а не 1+(2*3)=7
 }
 
 // Тест на вложенные скобки
 TEST(ParserPrecedenceTest, NestedParentheses) {
-    Parser parser = Parser("(x1 + (x2 * x3)) / (x4 - x5)");
+    Parser parser("(x1 + (x2 * x3)) / (x4 - x5)");
     std::unordered_map<std::string, double> variables = {{"x1", 5.0}, {"x2", 3.0}, {"x3", 4.0}, {"x4", 7.0}, {"x5", 2.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 3.4);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 3.4);
 }
 
 // Тест на приоритет степени
 TEST(ParserPrecedenceTest, ExponentiationPrecedence) {
-    Parser parser = Parser("x1 * x2 ^ x3");
+    Parser parser("x1 * x2 ^ x3");
     std::unordered_map<std::string, double> variables = {{"x1", 2.0}, {"x2", 3.0}, {"x3", 2.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 18.0); // 2 * (3^2) = 18, а не (2*3)^2=36
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 18.0); // 2 * (3^2) = 18, а не (2*3)^2=36
 }
 
 // Тест на сочетание разных операций
 TEST(ParserPrecedenceTest, MixedOperations) {
-    Parser parser = Parser("x1 + x2 * x3 ^ x4");
+    Parser parser("x1 + x2 * x3 ^ x4");
     std::unordered_map<std::string, double> variables = {{"x1", 1.0}, {"x2", 2.0}, {"x3", 3.0}, {"x4", 2.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 19.0); // 1 + (2*(3^2)) = 19
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 19.0); // 1 + (2*(3^2)) = 19
 }
 
 // Тест на унарный минус и приоритет
 TEST(ParserPrecedenceTest, UnaryMinusPrecedence) {
-    Parser parser = Parser("(-x1) ^ 2");
     std::unordered_map<std::string, double> variables = {{"x1", 3.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 9.0);
+
+    Parser parser("(-x1) ^ 2");
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 9.0);
 
     parser = Parser("-x1 ^ 2");
-    std::unordered_map<std::string, double> variables = {{"x1", 3.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), -9.0); // -(3^2) = -9, а не (-3)^2=9
+    EXPECT_DOUBLE_EQ(parser.calc(variables), -9.0); // -(3^2) = -9, а не (-3)^2=9
 }
 
 // Тест на приоритет функций
 TEST(ParserPrecedenceTest, FunctionPrecedence) {
-    Parser parser = Parser("sin(x1 + x2) * cos(x3 - x4)");
+    Parser parser("sin(x1 + x2) * cos(x3 - x4)");
     std::unordered_map<std::string, double> variables = {{"x1", 0.5}, {"x2", 0.5}, {"x3", 1.0}, {"x4", 0.5}};
-    EXPECT_NEAR(calc(variables), 0.8415 * 0.8776, 1e-4);
+    EXPECT_NEAR(parser.calc(variables), 0.8415 * 0.8776, 1e-4);
 }
 
 // Тест на сложное сочетание операций
 TEST(ParserPrecedenceTest, ComplexExpression) {
-    Parser parser = Parser("(x1 + x2 * x3) ^ (x4 / x5) - x6");
+    Parser parser("(x1 + x2 * x3) ^ (x4 / x5) - x6");
     std::unordered_map<std::string, double> variables = {{"x1", 1.0}, {"x2", 2.0}, {"x3", 3.0}, {"x4", 4.0}, {"x5", 2.0}, {"x6", 9.0}};
-    EXPECT_DOUBLE_EQ(calc(variables), 40.0);
+    EXPECT_DOUBLE_EQ(parser.calc(variables), 40.0);
 }
 
 // Тесты на особые случаи
 // TEST(ParserExceptionsTest, DivisionByZero) {
-//     Parser parser = Parser("x1 / x2");
+//     Parser parser("x1 / x2");
 //     SetVariable(parser, "x1", 1.0);
 //     SetVariable(parser, "x2", 0.0);
 
 //     EXPECT_THROW({
 //         try {
-//             calc(variables);
+//             parser.calc(variables);
 //         }catch (const runtime_error& e) {
 //         EXPECT_STREQ(e.what(), "Division by zero");
 //         throw;

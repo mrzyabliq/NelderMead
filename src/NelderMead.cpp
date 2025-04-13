@@ -14,40 +14,37 @@ using namespace std;
 
 
 //Структура для хранения переменной
-struct X {
-  vector<double> coordinates;
-  double value;
-  bool operator<(const X& other) const { return value < other.value; }
-  vector<double> operator+(const X& other) const {
-    X valuable = *this;
-    for (int i = 0; i < coordinates.size(); i++) {
-      valuable.coordinates[i] += other.coordinates[i];
-    }
 
-    return valuable.coordinates;
-  }
-  vector<double> operator-(const X& other) const {
-    X valuable = *this;
-    for (int i = 0; i < coordinates.size(); i++) {
-      valuable.coordinates[i] -= other.coordinates[i];
-    }
+bool X::operator<(const X &other) const { return value < other.value; }
 
-    return valuable.coordinates;
+vector<double> X::operator+(const X &other) const {
+  X valuable = *this;
+  for (int i = 0; i < coordinates.size(); i++) {
+    valuable.coordinates[i] += other.coordinates[i];
   }
-};
+
+  return valuable.coordinates;
+}
+
+vector<double> X::operator-(const X &other) const {
+  X valuable = *this;
+  for (int i = 0; i < coordinates.size(); i++) {
+    valuable.coordinates[i] -= other.coordinates[i];
+  }
+
+  return valuable.coordinates;
+}
+
 //Класс решателя Нелдера-Мида
-class NelderMead {
-  vector<X> symplex;
-  Parser function;
-  int dims;
 
- public:
-  NelderMead(string expression) {
+
+  NelderMead::NelderMead(string expression) {
     symplex = {};
     function = Parser(expression);
     dims = function.num_of_variables;
   }
-  X Solver() {
+
+  X NelderMead::Solver() {
     startPoint();
     Sort();
     int i = 0;
@@ -60,7 +57,8 @@ class NelderMead {
     }
     return symplex[dims];
   }
-  void startPoint() {
+
+  void NelderMead::startPoint() {
     vector<double> init_point;
     for (int i = 0; i < dims; i++) {
       init_point.push_back(0);
@@ -73,9 +71,9 @@ class NelderMead {
     }
   }
 
-  double calcFunc(X x) { return function.calc(vectorToMap(x.coordinates)); }
+  double NelderMead::calcFunc(X x) { return function.calc(vectorToMap(x.coordinates)); }
 
-  unordered_map<string, double> vectorToMap(vector<double> coords) {
+  unordered_map<string, double> NelderMead::vectorToMap(vector<double> coords) {
     unordered_map<string, double> variables;
     for (int i = 0; i < coords.size(); i++) {
       variables["x" + to_string(i)] = coords[i];
@@ -83,8 +81,8 @@ class NelderMead {
     return variables;
   }
 
-  void Sort() { sort(symplex.rbegin(), symplex.rend()); }
-  X computeCentroid() {
+  void NelderMead::Sort() { sort(symplex.rbegin(), symplex.rend()); }
+  X NelderMead::computeCentroid() {
     X centroid = {vector<double>(dims, 0), 0};
     for (int i = 1; i < symplex.size(); i++) {
       centroid.coordinates = centroid + symplex[i];
@@ -93,224 +91,18 @@ class NelderMead {
     for (auto val : centroid.coordinates) {
       val /= dims;
     }
-<<<<<<< HEAD
-
-private:
-    string expression;
-    vector<Token> expression_parsed;
-    int num_of_variables = 0;
-    unordered_map <string, double> var_nums;
-    int pos;
-    void Parse() {
-        int cur_pos = 0;
-        while (cur_pos < this->expression.size())
-        {
-            char c = expression[cur_pos];
-            if (c == ' ') cur_pos++;
-            else if (isdigit(c)) cur_pos = parse_num(cur_pos);
-            else if (isalpha(c)) cur_pos = parse_expression(cur_pos);
-            else {
-                switch (c)
-                {
-                case '+': expression_parsed.push_back({ Plus }); break;
-                case '-': expression_parsed.push_back({ Minus }); break;
-                case '*': expression_parsed.push_back({ Multiply }); break;
-                case '/': expression_parsed.push_back({ Divide }); break;
-                case '^': expression_parsed.push_back({ Raise }); break;
-                case '(': expression_parsed.push_back({ LParenthesis }); break;
-                case ')': expression_parsed.push_back({ RParenthesis }); break;
-                default: throw runtime_error("Invalid character");
-                }
-                cur_pos++;
-            }
-
-
-        }
-    }
-    void next_pos()
-    {
-        pos = pos < expression_parsed.size() - 1 ? pos + 1 : pos;
-    }
-    double calc_exp_plus()
-    {
-        double res = calc_exp_mult();
-        while (expression_parsed[pos].type == Plus || expression_parsed[pos].type == Minus)
-        {
-            next_pos();
-            auto op_type = expression_parsed[pos - 1].type;
-            double pod_res = calc_exp_mult();
-            if (op_type == Plus) res += pod_res;
-            else if (op_type == Minus) res -= pod_res;
-            if (pos >= expression_parsed.size())
-            {
-                break;
-            }
-        }
-        return res;
-    }
-    double calc_exp_mult()
-    {
-        double res = calc_exp_raise();
-        while (expression_parsed[pos].type == Multiply || expression_parsed[pos].type == Divide)
-        {
-            next_pos();
-            auto op_type = expression_parsed[pos - 1].type;
-            double pod_res = calc_exp_raise();
-            if (op_type == Multiply) res *= pod_res;
-            else if (op_type == Divide) res = pod_res != 0 ? (double)res / pod_res : throw runtime_error("Division by zero");
-        }
-        return res;
-    }
-    double calc_exp_raise()
-    {
-        double res = calc_end();
-        while (expression_parsed[pos].type == Raise)
-        {
-            next_pos();
-            double pod_res = calc_end();
-            res = std::pow(res, pod_res);
-        }
-        return res;
-    }
-    double calc_end()
-    {
-        if (expression_parsed[pos].type == Number)
-        {
-            double vlaue = expression_parsed[pos].value;
-            next_pos();
-            return vlaue;
-        }
-        if (expression_parsed[pos].type == Function)
-        {
-            
-            string func_name = expression_parsed[pos].expression;
-            next_pos();
-            double arg = calc_end();
-
-
-            if (func_name == "sin") return std::sin(arg);
-            if (func_name == "cos") return std::cos(arg);
-            if (func_name == "tan") return std::tan(arg);
-            if (func_name == "exp") return std::exp(arg);
-            if (func_name == "abs") return std::abs(arg);
-        }
-        if (expression_parsed[pos].type == Variable)
-        {
-            double value = var_nums["x" + to_string(expression_parsed[pos].index)];
-            next_pos();
-            return value;
-        }
-        if (expression_parsed[pos].type == LParenthesis)
-        {
-            next_pos();
-            double res = calc_exp_plus();
-            if (expression_parsed[pos].type != RParenthesis)
-            {
-                throw runtime_error("Missing closing parenthesis");
-            }
-            next_pos();
-            return res;
-        }
-        if (expression_parsed[pos].type == Minus)
-        {
-            next_pos();
-            return -calc_end();
-        }
-        throw runtime_error("Unexpected token");
-    }
-    int parse_num(int cur_pos)
-    {
-        double num = expression[cur_pos] - '0';
-        bool dot = false;
-        int nums_after_dot = 1;
-        cur_pos++;
-        while (cur_pos < expression.size() && (isdigit(expression[cur_pos]) || expression[cur_pos] == '.'))
-        {
-            if (expression[cur_pos] == '.')
-            {
-                if (dot)
-                {
-                    throw runtime_error("Invalid number");
-                }
-
-                dot = true;
-            }
-            else
-            {
-                num *= 10;
-                num += expression[cur_pos] - '0';
-                if (dot)
-                {
-                    nums_after_dot *= 10;
-                }
-
-            }
-            cur_pos++;
-
-
-        }
-        num = (double)num / nums_after_dot;
-        expression_parsed.push_back({ Number, num });
-        return cur_pos;
-    }
-    int parse_expression(int cur_pos)
-    {
-        int start_pos = cur_pos;
-        if (expression[cur_pos] == 'x')
-        {
-
-            int num = 0;
-            cur_pos++;
-            while (cur_pos < expression.size() && (isdigit(expression[cur_pos])))
-            {
-
-                num *= 10;
-                num += expression[cur_pos] - '0';
-                cur_pos++;
-            }
-            num_of_variables++;
-            expression_parsed.push_back({ Variable,0.0,num });
-            return cur_pos;
-        }
-        while (cur_pos < expression.size() && isalnum(expression[cur_pos])) cur_pos++;
-        string name = expression.substr(start_pos, cur_pos - start_pos);
-        if (name == "sin" || name == "cos" || name == "tan" || name == "cotan" || name == "exp" || name == "abs")  expression_parsed.push_back({ Function,0.0,0, name });
-
-        return cur_pos;
-    }
-    int parse_arg(int cur_pos)
-    {
-        while (cur_pos < expression.size() && (expression[cur_pos] == '(' || expression[cur_pos] == ' ')) cur_pos++;
-        if (cur_pos == expression.size()) throw runtime_error("Ivalid argument of function");
-        int start_pos = cur_pos;
-        while (cur_pos < expression.size() && expression[cur_pos] != ')') cur_pos++;
-        if (cur_pos == expression.size()) throw runtime_error("Invalid argument");
-        string sub_expression = expression.substr(start_pos, cur_pos - start_pos);
-        expression_parsed.push_back({ Argument, 0.0, 0, sub_expression });
-        return cur_pos;
-
-    }
-
-};
-
-struct ParserHandle {
-    std::unordered_map<std::string, double> variables;
-    Parser parser;
-
-    ParserHandle(const char* expr) :parser(expr) {}
-=======
     centroid.value = calcFunc(centroid);
     return centroid;
   }
-  X reflection(X centroid, X worst_point) {
+
+  X NelderMead::reflection(X centroid, X worst_point) {
     X result;
     result.coordinates = (centroid - worst_point);
     result.coordinates = result + centroid;
     result.value = calcFunc(result);    
     return result;
   }
->>>>>>> upstream/NelderMeadImplementation
-};
+
 
 // C-интерфейс для NelderMead
 extern "C" {
