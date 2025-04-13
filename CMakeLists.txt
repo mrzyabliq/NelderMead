@@ -42,8 +42,8 @@ add_library(NelderMead SHARED
 )
 
 target_include_directories(NelderMead
-    PUBLIC include
     PRIVATE src
+    PUBLIC include
 )
 
 if(UNIX)
