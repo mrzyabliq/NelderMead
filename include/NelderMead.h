@@ -1,27 +1,45 @@
 #pragma once
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "Parser.h"
 
-// ”ниверсальный макрос дл€ экспорта/импорта
-#if defined(_WIN32)
-    #if defined(NELDERMEAD_EXPORTS)
-        #define NELDERMEAD_API __declspec(dllexport)
-    #else
-        #define NELDERMEAD_API __declspec(dllimport)
-    #endif
+
+#ifdef _WIN32
+#ifdef NELDERMEAD_EXPORTS
+#define NELDERMEAD_API __declspec(dllexport)
 #else
-    #define NELDERMEAD_API __attribute__((visibility("default")))
+#define NELDERMEAD_API __declspec(dllimport)
+#endif
+#else
+#define NELDERMEAD_API __attribute__((visibility("default")))
 #endif
 
-typedef struct ParserHandle ParserHandle;
+struct X {
+  std::vector<double> coordinates;
+  double value;
 
-NELDERMEAD_API ParserHandle* CreateParser(const char* expression);
-NELDERMEAD_API void SetVariable(ParserHandle* handle, const char* name, double value);
-NELDERMEAD_API double Evaluate(ParserHandle* handle);
-NELDERMEAD_API void DestroyParser(ParserHandle* handle);
+  bool operator<(const X& other) const;
+  std::vector<double> operator+(const X& other) const;
+  std::vector<double> operator-(const X& other) const;
+};
 
-#ifdef __cplusplus
-}
-#endif
+class NELDERMEAD_API NelderMead {
+  std::vector<X> symplex;
+  Parser function;
+  int dims;
+
+ public:
+  NelderMead(std::string expression);
+  X Solver();
+
+ private:
+  void startPoint();
+  void Sort();
+  X computeCentroid();
+  X reflection(X centroid, X worst_point);
+  double calcFunc(X x);
+  std::unordered_map<std::string, double> vectorToMap(
+      std::vector<double> coords);
+};
