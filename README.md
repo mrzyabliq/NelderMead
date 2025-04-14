@@ -4,18 +4,11 @@
 # Инструкция
 Сборка осуществляется с помощью CMake.
 ## Сборка проекта на Windows и Linux
-1. В корневой директории создайте папку для сборки:
-```mkdir build```
-2. Перейдите в папку сборки:
-```cd build```
-3. Сконфигурируйте проект:
-```cmake ..```
-4. Соберите проект:
-```cmake --build .```
-
+-Windows: запустите ```buildme.bat``` для сборки проекта
+-Linux: (добавить)
 ## Запуск тестов и расположение библиотеки (Windows)
-- Запуск тестов: ```./Debug/NelderMeadTests.exe``` или ```ctest -V```
+- Запуск тестов: ```runtests.bat``` или ```ctest -C Debug --output-on-failure```
 - Расположениее dll ```build/Debug/NelderMead.dll```
 ## Запуск тестов и расположение библиотеки (Linux)
-- Запуск тестов: ```./NelderMeadTests``` или ```ctest -V```
+- Запуск тестов: ```./NelderMeadTests``` или ```ctest -C Debug --output-on-failure```
 - Расположениее dll ```build/libNelderMead.so```
