@@ -14,8 +14,8 @@
 ```cmake --build .```
 
 ## Запуск тестов и расположение библиотеки (Windows)
-- Запуск тестов: ```./Debug/NelderMeadTests.exe``` или ```ctest -V```
+- Запуск тестов: ```./Debug/NelderMeadTests.exe``` или ```ctest -C Debug --output-on-failure```
 - Расположениее dll ```build/Debug/NelderMead.dll```
 ## Запуск тестов и расположение библиотеки (Linux)
-- Запуск тестов: ```./NelderMeadTests``` или ```ctest -V```
+- Запуск тестов: ```./NelderMeadTests``` или ```ctest -C Debug --output-on-failure```
 - Расположениее dll ```build/libNelderMead.so```
