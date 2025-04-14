@@ -49,3 +49,4 @@ _ReSharper.*
 *.opensdf
 *.VC.db
 *.VC.VC.opendb
+.vscode/

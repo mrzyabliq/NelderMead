@@ -36,13 +36,14 @@ FetchContent_MakeAvailable(googletest)
 # Сборка основной библиотеки
 add_library(NelderMead SHARED 
     src/NelderMead.cpp
+    src/Parser.cpp
     src/library_init.cpp
     src/pch.cpp
 )
 
 target_include_directories(NelderMead
-    PUBLIC include
     PRIVATE src
+    PUBLIC include
 )
 
 if(UNIX)
