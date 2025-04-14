@@ -136,6 +136,8 @@ double Parser::calc_end() {
       return std::exp(arg);
     if (func_name == "abs")
       return std::abs(arg);
+    if (func_name == "sqrt")
+      return std::sqrt(arg);
   }
   if (expression_parsed[pos].type == Typess::Variable) {
     double value = var_nums["x" + to_string(expression_parsed[pos].index)];
@@ -203,7 +205,7 @@ int Parser::parse_expression(int cur_pos) {
     cur_pos++;
   string name = expression.substr(start_pos, cur_pos - start_pos);
   if (name == "sin" || name == "cos" || name == "tan" || name == "cotan" ||
-      name == "exp" || name == "abs")
+      name == "exp" || name == "abs" || name == "sqrt")
     expression_parsed.push_back({Typess::Function, 0.0, 0, name});
 
   return cur_pos;
