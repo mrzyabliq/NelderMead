@@ -34,7 +34,7 @@ class Parser {
   Parser() = default;
 
   double calc(std::unordered_map<std::string, double> variables);
-  int num_of_variables;
+  int num_of_variables = expression_parsed.size();
 
  private:
   void Parse();

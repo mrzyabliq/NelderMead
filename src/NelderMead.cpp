@@ -14,40 +14,37 @@ using namespace std;
 
 
 //Структура для хранения переменной
-struct X {
-  vector<double> coordinates;
-  double value;
-  bool operator<(const X& other) const { return value < other.value; }
-  vector<double> operator+(const X& other) const {
-    X valuable = *this;
-    for (int i = 0; i < coordinates.size(); i++) {
-      valuable.coordinates[i] += other.coordinates[i];
-    }
 
-    return valuable.coordinates;
-  }
-  vector<double> operator-(const X& other) const {
-    X valuable = *this;
-    for (int i = 0; i < coordinates.size(); i++) {
-      valuable.coordinates[i] -= other.coordinates[i];
-    }
+bool X::operator<(const X &other) const { return value < other.value; }
 
-    return valuable.coordinates;
+vector<double> X::operator+(const X &other) const {
+  X valuable = *this;
+  for (int i = 0; i < coordinates.size(); i++) {
+    valuable.coordinates[i] += other.coordinates[i];
   }
-};
+
+  return valuable.coordinates;
+}
+
+vector<double> X::operator-(const X &other) const {
+  X valuable = *this;
+  for (int i = 0; i < coordinates.size(); i++) {
+    valuable.coordinates[i] -= other.coordinates[i];
+  }
+
+  return valuable.coordinates;
+}
+
 //Класс решателя Нелдера-Мида
-class NelderMead {
-  vector<X> symplex;
-  Parser function;
-  int dims;
 
- public:
-  NelderMead(string expression) {
+
+  NelderMead::NelderMead(string expression) {
     symplex = {};
     function = Parser(expression);
     dims = function.num_of_variables;
   }
-  X Solver() {
+
+  X NelderMead::Solver() {
     startPoint();
     Sort();
     int i = 0;
@@ -60,7 +57,8 @@ class NelderMead {
     }
     return symplex[dims];
   }
-  void startPoint() {
+
+  void NelderMead::startPoint() {
     vector<double> init_point;
     for (int i = 0; i < dims; i++) {
       init_point.push_back(0);
@@ -73,9 +71,9 @@ class NelderMead {
     }
   }
 
-  double calcFunc(X x) { return function.calc(vectorToMap(x.coordinates)); }
+  double NelderMead::calcFunc(X x) { return function.calc(vectorToMap(x.coordinates)); }
 
-  unordered_map<string, double> vectorToMap(vector<double> coords) {
+  unordered_map<string, double> NelderMead::vectorToMap(vector<double> coords) {
     unordered_map<string, double> variables;
     for (int i = 0; i < coords.size(); i++) {
       variables["x" + to_string(i)] = coords[i];
@@ -83,8 +81,8 @@ class NelderMead {
     return variables;
   }
 
-  void Sort() { sort(symplex.rbegin(), symplex.rend()); }
-  X computeCentroid() {
+  void NelderMead::Sort() { sort(symplex.rbegin(), symplex.rend()); }
+  X NelderMead::computeCentroid() {
     X centroid = {vector<double>(dims, 0), 0};
     for (int i = 1; i < symplex.size(); i++) {
       centroid.coordinates = centroid + symplex[i];
@@ -96,14 +94,15 @@ class NelderMead {
     centroid.value = calcFunc(centroid);
     return centroid;
   }
-  X reflection(X centroid, X worst_point) {
+
+  X NelderMead::reflection(X centroid, X worst_point) {
     X result;
     result.coordinates = (centroid - worst_point);
     result.coordinates = result + centroid;
     result.value = calcFunc(result);    
     return result;
   }
-};
+
 
 // C-интерфейс для NelderMead
 extern "C" {
