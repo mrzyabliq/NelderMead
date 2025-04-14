@@ -2,6 +2,8 @@
 #include "../include/NelderMead.h"
 #include "../include/Parser.h"
 #include <iostream>
+#include <libloaderapi.h>
+#include <wchar.h>
 
 TEST(ParserSimpleTest, CreateAndDestroy) {
     Parser parser("x1+1");
@@ -125,6 +127,14 @@ TEST(ParserPrecedenceTest, ComplexExpression) {
     EXPECT_DOUBLE_EQ(parser.calc(variables), 40.0);
 }
 
+TEST(NelderMeadSimpleTest, RozenbrockFunction) {
+    HMODULE hlib = LoadLibrary(TEXT("NelderMead.dll"));
+    NelderMeadHandle* solver = CreateNelderMead("100*(x2 - x1^2)^2 + (1 - x1)^2");
+    double output[2];
+    Solve(solver, output, 2);
+    EXPECT_DOUBLE_EQ(output[0], 1.0);
+    EXPECT_DOUBLE_EQ(output[1], 1.0);
+}
 // Тесты на особые случаи
 // TEST(ParserExceptionsTest, DivisionByZero) {
 //     Parser parser("x1 / x2");
@@ -152,4 +162,5 @@ TEST(ParserPrecedenceTest, ComplexExpression) {
 //         }
 //     }, runtime_error);
 //}
+
 

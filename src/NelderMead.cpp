@@ -1,4 +1,4 @@
-#include "NelderMead.h"
+#include "../include/NelderMead.h"
 
 #include <algorithm>
 #include <cmath>
@@ -103,7 +103,6 @@ vector<double> X::operator-(const X &other) const {
     return result;
   }
 
-
 // C-интерфейс для NelderMead
 extern "C" {
   struct NelderMeadHandle {
@@ -128,3 +127,4 @@ extern "C" {
       delete handle;
   }
 }
+
