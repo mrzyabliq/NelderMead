@@ -44,16 +44,16 @@ class NELDERMEAD_API NelderMead {
       std::vector<double> coords);
 };
 
-// C-интерфейс для работы с DLL
+// C-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ DLL
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Непрозрачный указатель на объект NelderMead
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ NelderMead
 typedef struct NelderMeadHandle NelderMeadHandle;
 
 NELDERMEAD_API NelderMeadHandle* CreateNelderMead(const char* expr);
-NELDERMEAD_API void Solve(NelderMeadHandle* handle, double* output, int size);
+NELDERMEAD_API void Solve(NelderMeadHandle* handle, double* output);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
 
 #ifdef __cplusplus

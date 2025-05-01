@@ -1,9 +1,16 @@
 #include "gtest/gtest.h"
 #include "../include/NelderMead.h"
 #include "../include/Parser.h"
-#include <iostream>
-#include <libloaderapi.h>
-#include <wchar.h>
+//#include <iostream>
+#ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #include <libloaderapi.h>
+#else
+    // Linux-эквиваленты, если нужны
+    #include <dlfcn.h>  // Для динамической загрузки (если используется)
+#endif
+
 
 TEST(ParserSimpleTest, CreateAndDestroy) {
     Parser parser("x1+1");
@@ -127,13 +134,46 @@ TEST(ParserPrecedenceTest, ComplexExpression) {
     EXPECT_DOUBLE_EQ(parser.calc(variables), 40.0);
 }
 
+TEST(NelderMeadSimpleTest, Function1) {
+    //HMODULE hlib = LoadLibrary(TEXT("../build/Debug/NelderMead.dll"));
+    NelderMeadHandle* solver = CreateNelderMead("x1^2 + x1*x2 + x2^2 -6*x1 - 9*x2 ");
+    double output[2];
+    Solve(solver, output);
+    EXPECT_DOUBLE_EQ(output[0], 1);
+    EXPECT_DOUBLE_EQ(output[1], 4);
+}
+
 TEST(NelderMeadSimpleTest, RozenbrockFunction) {
-    HMODULE hlib = LoadLibrary(TEXT("NelderMead.dll"));
+    //HMODULE hlib = LoadLibrary(TEXT("NelderMead.dll"));
     NelderMeadHandle* solver = CreateNelderMead("100*(x2 - x1^2)^2 + (1 - x1)^2");
     double output[2];
-    Solve(solver, output, 2);
+    Solve(solver, output);
     EXPECT_DOUBLE_EQ(output[0], 1.0);
     EXPECT_DOUBLE_EQ(output[1], 1.0);
+}
+
+TEST(NelderMeadSimpleTest, SquareFunction) {
+    //HMODULE hlib = LoadLibrary(TEXT("../build/Debug/NelderMead.dll"));
+    NelderMeadHandle* solver = CreateNelderMead("x1^2 + 2*x2^2 +3*x3^2");
+    double output[3];
+    Solve(solver, output);
+    EXPECT_DOUBLE_EQ(output[0], 0);
+    EXPECT_DOUBLE_EQ(output[1], 0);
+    EXPECT_DOUBLE_EQ(output[2], 0);
+}
+
+// Тест на функцию Розенброка (известный сложный случай)
+TEST(NelderMead, Rosenbrock) {
+    NelderMeadHandle* handle = CreateNelderMead("100*(y - x^2)^2 + (1 - x)^2");
+    ASSERT_NE(handle, nullptr);
+
+    double result[2];
+    Solve(handle, result);
+
+    EXPECT_NEAR(result[0], 1.0, 1e-3);
+    EXPECT_NEAR(result[1], 1.0, 1e-3);
+
+    DestroyNelderMead(handle);
 }
 // Тесты на особые случаи
 // TEST(ParserExceptionsTest, DivisionByZero) {
