@@ -50,3 +50,5 @@ _ReSharper.*
 *.VC.db
 *.VC.VC.opendb
 .vscode/
+build/
+Testing/
