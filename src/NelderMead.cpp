@@ -1,4 +1,4 @@
-#include "NelderMead.h"
+#include "../include/NelderMead.h"
 
 #include <algorithm>
 #include <cmath>
@@ -103,9 +103,10 @@ vector<double> X::operator-(const X &other) const {
     return result;
   }
 
-
 // C-интерфейс для NelderMead
+#ifdef __cplusplus
 extern "C" {
+#endif
   struct NelderMeadHandle {
       NelderMead* solver;
       NelderMeadHandle(const char* expr) : 
@@ -117,14 +118,17 @@ extern "C" {
       return new NelderMeadHandle(expr);
   }
 
-  void Solve(NelderMeadHandle* handle, double* output, int size) {
+  void Solve(NelderMeadHandle* handle, double* output) {
       if (!handle || !output) return;
       X result = handle->solver->Solver();
-      if (result.coordinates.size() != size) return;
       std::copy(result.coordinates.begin(), result.coordinates.end(), output);
   }
 
   void DestroyNelderMead(NelderMeadHandle* handle) {
       delete handle;
   }
+
+#ifdef __cplusplus
 }
+#endif
+

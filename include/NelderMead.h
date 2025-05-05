@@ -43,3 +43,19 @@ class NELDERMEAD_API NelderMead {
   std::unordered_map<std::string, double> vectorToMap(
       std::vector<double> coords);
 };
+
+// C-��������� ��� ������ � DLL
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// ������������ ��������� �� ������ NelderMead
+typedef struct NelderMeadHandle NelderMeadHandle;
+
+NELDERMEAD_API NelderMeadHandle* CreateNelderMead(const char* expr);
+NELDERMEAD_API void Solve(NelderMeadHandle* handle, double* output);
+NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
+
+#ifdef __cplusplus
+}
+#endif
