@@ -221,28 +221,28 @@ int Parser::parse_arg(int cur_pos) {
   return cur_pos;
 }
 
-struct ParserHandle {
-  std::unordered_map<std::string, double> variables;
-  Parser parser;
+// struct ParserHandle {
+//   std::unordered_map<std::string, double> variables;
+//   Parser parser;
 
-  ParserHandle(const char *expr) : parser(expr) {}
-};
+//   ParserHandle(const char *expr) : parser(expr) {}
+// };
 
-extern "C" {
-ParserHandle *CreateParser(const char *expression) {
-  return new ParserHandle(expression);
-}
+// extern "C" {
+// ParserHandle *CreateParser(const char *expression) {
+//   return new ParserHandle(expression);
+// }
 
-void SetVariable(ParserHandle *handle, const char *name, double value) {
-  if (handle) {
-    handle->variables[name] = value;
-  }
-}
+// void SetVariable(ParserHandle *handle, const char *name, double value) {
+//   if (handle) {
+//     handle->variables[name] = value;
+//   }
+// }
 
-double Evaluate(ParserHandle *handle) {
-  if (!handle) return NAN;
-  return handle->parser.calc(handle->variables);
-}
+// double Evaluate(ParserHandle *handle) {
+//   if (!handle) return NAN;
+//   return handle->parser.calc(handle->variables);
+// }
 
-void DestroyParser(ParserHandle *handle) { delete handle; }
-}
+// void DestroyParser(ParserHandle *handle) { delete handle; }
+// }
