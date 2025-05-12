@@ -175,6 +175,11 @@ TEST(NelderMead, Rosenbrock) {
 
     DestroyNelderMead(handle);
 }
+
+TEST(NelderMead, TetsDllImport)
+{
+    
+}
 // Тесты на особые случаи
 // TEST(ParserExceptionsTest, DivisionByZero) {
 //     Parser parser("x1 / x2");
