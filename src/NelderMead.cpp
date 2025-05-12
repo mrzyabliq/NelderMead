@@ -191,6 +191,31 @@ void Solve(NelderMeadHandle* handle, double* output) {
 
 void DestroyNelderMead(NelderMeadHandle* handle) { delete handle; }
 
+void* CreateParser(const char* expr) {
+        try {
+            return new Parser(std::string(expr));
+        } catch(...) {
+            return nullptr;
+        }
+    }
+
+double ParserCalc(void* parser, const char* variable_names[], double variable_values[], int count) {
+        if (!parser) return NAN;
+        
+        Parser* p = static_cast<Parser*>(parser);
+        std::unordered_map<std::string, double> vars;
+        
+        for (int i = 0; i < count; ++i) {
+            vars[variable_names[i]] = variable_values[i];
+        }
+        
+        return p->calc(vars);
+    }
+
+void DestroyParser(void* parser) {
+        delete static_cast<Parser*>(parser);
+    }
+
 #ifdef __cplusplus
 }
 #endif
