@@ -1,7 +1,5 @@
 #pragma once
 #include "gtest/gtest.h"
-// #include "../include/NelderMead.h"
-// #include "../include/Parser.h"
 #include "NelderMeadTestFixture.h"
 #include "ParserTestFixture.h"
 //#include <iostream>

@@ -13,15 +13,13 @@ protected:
     typedef double (*ParserCalcFunc)(ParserHandle, const char*[], double[], int);
     typedef void (*DestroyParserFunc)(ParserHandle);
 
-    // Статические члены для хранения состояния
     static HMODULE hDll;
     static CreateParserFunc CreateParser;
     static ParserCalcFunc Calc;
     static DestroyParserFunc DestroyParser;
 
-    // Инициализация DLL перед всеми тестами
     static void SetUpTestSuite() {
-        hDll = LoadLibraryW(L"NelderMead.dll");  // ANSI-версия для простоты
+        hDll = LoadLibraryW(L"NelderMead.dll");
         ASSERT_TRUE(hDll != nullptr) 
             << "DLL load failed. Error: " << GetLastError();
 
@@ -37,7 +35,6 @@ protected:
         ASSERT_TRUE(DestroyParser) << "DestroyParser not found in DLL";
     }
 
-    // Очистка после всех тестов
     static void TearDownTestSuite() {
         if (hDll) {
             FreeLibrary(hDll);
@@ -45,7 +42,6 @@ protected:
         }
     }
 
-    // Вспомогательный метод для удобного вычисления
     double EvaluateExpression(
         ParserHandle parser,
         const std::unordered_map<std::string, double>& vars
@@ -62,7 +58,6 @@ protected:
     }
 };
 
-// Инициализация статических членов
 HMODULE ParserTestFixture::hDll = nullptr;
 ParserTestFixture::CreateParserFunc ParserTestFixture::CreateParser = nullptr;
 ParserTestFixture::ParserCalcFunc ParserTestFixture::Calc = nullptr;
