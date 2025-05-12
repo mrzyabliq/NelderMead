@@ -56,6 +56,7 @@ enable_testing()
 add_executable(NelderMeadTests
     test/AllTest.cpp
     test/tests.cpp
+    test/NelderMeadTestFixture.h
 )
 
 target_include_directories(NelderMeadTests PRIVATE include)

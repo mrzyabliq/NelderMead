@@ -1,6 +1,8 @@
+#pragma once
 #include "gtest/gtest.h"
-#include "../include/NelderMead.h"
+// #include "../include/NelderMead.h"
 #include "../include/Parser.h"
+#include "NelderMeadTestFixture.h"
 //#include <iostream>
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
@@ -10,7 +12,6 @@
     // Linux-эквиваленты, если нужны
     #include <dlfcn.h>  // Для динамической загрузки (если используется)
 #endif
-
 
 TEST(ParserSimpleTest, CreateAndDestroy) {
     Parser parser("x1+1");
@@ -134,18 +135,22 @@ TEST(ParserPrecedenceTest, ComplexExpression) {
     EXPECT_DOUBLE_EQ(parser.calc(variables), 40.0);
 }
 
-TEST(NelderMeadSimpleTest, Function1) {
-    //HMODULE hlib = LoadLibrary(TEXT("../build/Debug/NelderMead.dll"));
-    NelderMeadHandle* solver = CreateNelderMead("x1^2 + x1*x2 + x2^2 -6*x1 - 9*x2 ");
+TEST_F(NelderMeadTestFixture, CreateAndDestroySolver) {
+    NelderMeadHandle solver = CreateNelderMead("x^2 + y^2");
+    ASSERT_NE(solver, nullptr);
+    DestroyNelderMead(solver);  
+}
+
+TEST_F(NelderMeadTestFixture, Function1) {
+    NelderMeadHandle solver = CreateNelderMead("x1^2 + x1*x2 + x2^2 -6*x1 - 9*x2 ");
     double output[2];
     Solve(solver, output);
     EXPECT_NEAR(output[0], 1, 1e-3);
     EXPECT_NEAR(output[1], 4, 1e-3);
 }
 
-TEST(NelderMeadSimpleTest, RozenbrockFunction) {
-    //HMODULE hlib = LoadLibrary(TEXT("NelderMead.dll"));
-    NelderMeadHandle* solver = CreateNelderMead("100*(x1 - x2^2)^2 + (1 - x2)^2");
+TEST_F(NelderMeadTestFixture, RozenbrockFunction) {
+    NelderMeadHandle solver = CreateNelderMead("100*(x1 - x2^2)^2 + (1 - x2)^2");
     if (!solver) {
         std::cerr << "Failed to create solver!" << std::endl;
         return;
@@ -156,9 +161,8 @@ TEST(NelderMeadSimpleTest, RozenbrockFunction) {
     EXPECT_NEAR(output[1], 1, 1e-3);
 }
 
-TEST(NelderMeadSimpleTest, SquareFunction) {
-    //HMODULE hlib = LoadLibrary(TEXT("../build/Debug/NelderMead.dll"));
-    NelderMeadHandle* solver = CreateNelderMead("x1^2 + 2*x2^2 +3*x3^2");
+TEST_F(NelderMeadTestFixture, SquareFunction) {
+    NelderMeadHandle solver = CreateNelderMead("x1^2 + 2*x2^2 +3*x3^2");
     double output[3];
     Solve(solver, output);
     EXPECT_NEAR(output[0], 0, 1e-3);
@@ -167,8 +171,8 @@ TEST(NelderMeadSimpleTest, SquareFunction) {
 }
 
 // Тест на функцию Розенброка (известный сложный случай)
-TEST(NelderMead, Rosenbrock) {
-    NelderMeadHandle* handle = CreateNelderMead("100*(x1 - x2^2)^2 + (1 - x2)^2");
+TEST_F(NelderMeadTestFixture, Rosenbrock) {
+    NelderMeadHandle handle = CreateNelderMead("100*(x1 - x2^2)^2 + (1 - x2)^2");
     ASSERT_NE(handle, nullptr);
 
     double result[2];
@@ -180,10 +184,6 @@ TEST(NelderMead, Rosenbrock) {
     DestroyNelderMead(handle);
 }
 
-TEST(NelderMead, TetsDllImport)
-{
-    
-}
 // Тесты на особые случаи
 // TEST(ParserExceptionsTest, DivisionByZero) {
 //     Parser parser("x1 / x2");
