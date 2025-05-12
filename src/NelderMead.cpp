@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 #include "pch.h"
 
@@ -42,6 +43,7 @@ vector<double> X::operator-(const X &other) const {
     symplex = {};
     function = Parser(expression);
     dims = function.num_of_variables;
+    cout<<"Solver inited\n";
   }
 
   X NelderMead::Solver() {
@@ -49,25 +51,34 @@ vector<double> X::operator-(const X &other) const {
     Sort();
     int i = 0;
     while (i < 10000) {
-      X reflected = reflection(symplex[0], computeCentroid());
+      X reflected = reflection(computeCentroid(), symplex[0]);
       symplex.erase(symplex.begin());
       symplex.push_back(reflected);
       Sort();
+      if(abs(symplex.back().value - symplex[0].value) <= tolerance) 
+        break;
       i++;
     }
     return symplex[dims];
   }
 
   void NelderMead::startPoint() {
-    vector<double> init_point;
-    for (int i = 0; i < dims; i++) {
-      init_point.push_back(0);
-    }
+    // vector<double> init_point;
+    // for (int i = 0; i < dims; i++) {
+    //   init_point.push_back(0);
+    // }
+    // symplex.push_back({init_point, function.calc(vectorToMap(init_point))});
+    // for (int i = 0; i < dims; i++) {
+    //   vector<double> cur_var = init_point;
+    //   cur_var[i] = 1;
+    //   symplex.push_back({cur_var, function.calc(vectorToMap(cur_var))});
+    // }
+    vector<double> init_point(dims, 1.0); 
     symplex.push_back({init_point, function.calc(vectorToMap(init_point))});
-    for (int i = 0; i < dims; i++) {
-      vector<double> cur_var = init_point;
-      cur_var[i] = 1;
-      symplex.push_back({cur_var, function.calc(vectorToMap(cur_var))});
+    for (size_t i = 0; i < dims; ++i) {
+        vector<double> point = init_point;
+        point[i] += 0.05; // Добавляем 5% к i-й координате
+        symplex.push_back({point, function.calc(vectorToMap(point))});
     }
   }
 
@@ -76,7 +87,7 @@ vector<double> X::operator-(const X &other) const {
   unordered_map<string, double> NelderMead::vectorToMap(vector<double> coords) {
     unordered_map<string, double> variables;
     for (int i = 0; i < coords.size(); i++) {
-      variables["x" + to_string(i)] = coords[i];
+      variables["x" + to_string(i+1)] = coords[i];
     }
     return variables;
   }
@@ -88,7 +99,7 @@ vector<double> X::operator-(const X &other) const {
       centroid.coordinates = centroid + symplex[i];
     }
 
-    for (auto val : centroid.coordinates) {
+    for (auto &val : centroid.coordinates) {
       val /= dims;
     }
     centroid.value = calcFunc(centroid);

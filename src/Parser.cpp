@@ -38,33 +38,35 @@ void Parser::Parse() {
       cur_pos = parse_expression(cur_pos);
     else {
       switch (c) {
-      case '+':
-        expression_parsed.push_back({Typess::Plus});
-        break;
-      case '-':
-        expression_parsed.push_back({Typess::Minus});
-        break;
-      case '*':
-        expression_parsed.push_back({Typess::Multiply});
-        break;
-      case '/':
-        expression_parsed.push_back({Typess::Divide});
-        break;
-      case '^':
-        expression_parsed.push_back({Typess::Raise});
-        break;
-      case '(':
-        expression_parsed.push_back({Typess::LParenthesis});
-        break;
-      case ')':
-        expression_parsed.push_back({Typess::RParenthesis});
-        break;
-      default:
-        throw runtime_error("Invalid character");
+        case '+':
+          expression_parsed.push_back({Typess::Plus});
+          break;
+        case '-':
+          expression_parsed.push_back({Typess::Minus});
+          break;
+        case '*':
+          expression_parsed.push_back({Typess::Multiply});
+          break;
+        case '/':
+          expression_parsed.push_back({Typess::Divide});
+          break;
+        case '^':
+          expression_parsed.push_back({Typess::Raise});
+          break;
+        case '(':
+          expression_parsed.push_back({Typess::LParenthesis});
+          break;
+        case ')':
+          expression_parsed.push_back({Typess::RParenthesis});
+          break;
+        default:
+          throw runtime_error("Invalid character");
       }
       cur_pos++;
     }
+    num_of_variables = variables_set.size();
   }
+
 }
 
 void Parser::next_pos() {
@@ -126,18 +128,12 @@ double Parser::calc_end() {
     next_pos();
     double arg = calc_end();
 
-    if (func_name == "sin")
-      return std::sin(arg);
-    if (func_name == "cos")
-      return std::cos(arg);
-    if (func_name == "tan")
-      return std::tan(arg);
-    if (func_name == "exp")
-      return std::exp(arg);
-    if (func_name == "abs")
-      return std::abs(arg);
-    if (func_name == "sqrt")
-      return std::sqrt(arg);
+    if (func_name == "sin") return std::sin(arg);
+    if (func_name == "cos") return std::cos(arg);
+    if (func_name == "tan") return std::tan(arg);
+    if (func_name == "exp") return std::exp(arg);
+    if (func_name == "abs") return std::abs(arg);
+    if (func_name == "sqrt") return std::sqrt(arg);
   }
   if (expression_parsed[pos].type == Typess::Variable) {
     double value = var_nums["x" + to_string(expression_parsed[pos].index)];
@@ -197,12 +193,12 @@ int Parser::parse_expression(int cur_pos) {
       num += expression[cur_pos] - '0';
       cur_pos++;
     }
-    num_of_variables++;
+    variables_set.insert(num);
     expression_parsed.push_back({Typess::Variable, 0.0, num});
     return cur_pos;
   }
-  while (cur_pos < expression.size() && isalnum(expression[cur_pos]))
-    cur_pos++;
+
+  while (cur_pos < expression.size() && isalnum(expression[cur_pos])) cur_pos++;
   string name = expression.substr(start_pos, cur_pos - start_pos);
   if (name == "sin" || name == "cos" || name == "tan" || name == "cotan" ||
       name == "exp" || name == "abs" || name == "sqrt")
@@ -218,10 +214,8 @@ int Parser::parse_arg(int cur_pos) {
   if (cur_pos == expression.size())
     throw runtime_error("Ivalid argument of function");
   int start_pos = cur_pos;
-  while (cur_pos < expression.size() && expression[cur_pos] != ')')
-    cur_pos++;
-  if (cur_pos == expression.size())
-    throw runtime_error("Invalid argument");
+  while (cur_pos < expression.size() && expression[cur_pos] != ')') cur_pos++;
+  if (cur_pos == expression.size()) throw runtime_error("Invalid argument");
   string sub_expression = expression.substr(start_pos, cur_pos - start_pos);
   expression_parsed.push_back({Typess::Argument, 0.0, 0, sub_expression});
   return cur_pos;
@@ -246,8 +240,7 @@ void SetVariable(ParserHandle *handle, const char *name, double value) {
 }
 
 double Evaluate(ParserHandle *handle) {
-  if (!handle)
-    return NAN;
+  if (!handle) return NAN;
   return handle->parser.calc(handle->variables);
 }
 

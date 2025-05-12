@@ -41,7 +41,8 @@ class NELDERMEAD_API NelderMead {
   X reflection(X centroid, X worst_point);
   double calcFunc(X x);
   std::unordered_map<std::string, double> vectorToMap(
-      std::vector<double> coords);
+  std::vector<double> coords);
+  double tolerance = 0.000001;
 };
 
 // C-��������� ��� ������ � DLL
