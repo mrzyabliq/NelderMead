@@ -39,6 +39,9 @@ class NELDERMEAD_API NelderMead {
   void Sort();
   X computeCentroid();
   X reflection(X centroid, X worst_point);
+  X expansion(const X& centroid, const X& reflected);
+  X contraction(const X& centroid, const X& worst);
+  void reduction();
   double calcFunc(X x);
   std::unordered_map<std::string, double> vectorToMap(
   std::vector<double> coords);
