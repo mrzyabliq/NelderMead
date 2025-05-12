@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 
 enum class Typess {
@@ -34,7 +35,7 @@ class Parser {
   Parser() = default;
 
   double calc(std::unordered_map<std::string, double> variables);
-  int num_of_variables = expression_parsed.size();
+  int num_of_variables=0;
 
  private:
   void Parse();
@@ -47,7 +48,7 @@ class Parser {
   double calc_exp_mult();
   double calc_exp_raise();
   double calc_end();
-
+  std::set<int> variables_set;
   std::unordered_map<std::string, double> var_nums;
   int pos = 0;
 };
