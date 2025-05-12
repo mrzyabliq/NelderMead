@@ -55,14 +55,15 @@ extern "C" {
 
 // ������������ ��������� �� ������ NelderMead
 typedef struct NelderMeadHandle NelderMeadHandle;
+typedef struct ParserHandle ParserHandle;
 
 NELDERMEAD_API NelderMeadHandle* CreateNelderMead(const char* expr);
 NELDERMEAD_API void Solve(NelderMeadHandle* handle, double* output);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
 
-NELDERMEAD_API void* CreateParser(const char* expr);
-NELDERMEAD_API double ParserCalc(void* parser, const char* variable_names[], double variable_values[], int count);
-NELDERMEAD_API void DestroyParser(void* parser);
+NELDERMEAD_API ParserHandle* CreateParser(const char* expr);
+NELDERMEAD_API double ParserCalc(ParserHandle* handle, const char* variable_names[], double variable_values[], int count);
+NELDERMEAD_API void DestroyParser(ParserHandle* handle);
 
 
 #ifdef __cplusplus
