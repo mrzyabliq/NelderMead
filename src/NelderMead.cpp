@@ -191,31 +191,6 @@ void Solve(NelderMeadHandle* handle, double* output) {
 
 void DestroyNelderMead(NelderMeadHandle* handle) { delete handle; }
 
-ParserHandle* CreateParser(const char* expr) {
-        try {
-            return reinterpret_cast<ParserHandle*>(new Parser(std::string(expr)));
-        } catch(...) {
-            return nullptr;
-        }
-    }
-
-    double ParserCalc(ParserHandle* handle, const char* variable_names[], double variable_values[], int count) {
-        if (!handle) return NAN;
-        
-        Parser* p = reinterpret_cast<Parser*>(handle);
-        std::unordered_map<std::string, double> vars;
-        
-        for (int i = 0; i < count; ++i) {
-            vars[variable_names[i]] = variable_values[i];
-        }
-        
-        return p->calc(vars);
-    }
-
-    void DestroyParser(ParserHandle* handle) {
-        delete reinterpret_cast<Parser*>(handle);
-    }
-
 #ifdef __cplusplus
 }
 #endif
