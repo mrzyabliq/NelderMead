@@ -21,8 +21,11 @@ struct X {
   double value;
 
   bool operator<(const X& other) const;
-  std::vector<double> operator+(const X& other) const;
-  std::vector<double> operator-(const X& other) const;
+  X operator+(const X& other) const;
+  X operator-(const X& other) const;
+  X operator*(int num) const;
+  X operator*(double num) const;
+  X operator/(double num) const;
 };
 
 class NELDERMEAD_API NelderMead {
@@ -36,15 +39,17 @@ class NELDERMEAD_API NelderMead {
 
  private:
   void startPoint();
+  void startPoint(std::vector<double> init_point);
   void Sort();
+  void reduction();
+  void removeBad(X point);
+  void chooseBest();
   X computeCentroid();
   X reflection(X centroid, X worst_point);
   X expansion(const X& centroid, const X& reflected);
   X contraction(const X& centroid, const X& worst);
-  void reduction();
   double calcFunc(X x);
-  std::unordered_map<std::string, double> vectorToMap(
-  std::vector<double> coords);
+  std::unordered_map<std::string, double> vectorToMap(std::vector<double> coords);
   double tolerance = 0.000001;
 };
 
