@@ -4,6 +4,15 @@
 #include <vector>
 #include <set>
 
+#ifdef _WIN32
+#ifdef NELDERMEAD_EXPORTS
+#define NELDERMEAD_API __declspec(dllexport)
+#else
+#define NELDERMEAD_API __declspec(dllimport)
+#endif
+#else
+#define NELDERMEAD_API __attribute__((visibility("default")))
+#endif
 
 enum class Typess {
   Number,
@@ -52,3 +61,18 @@ class Parser {
   std::unordered_map<std::string, double> var_nums;
   int pos = 0;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct ParserHandle ParserHandle;
+
+NELDERMEAD_API ParserHandle* CreateParser(const char* expr);
+NELDERMEAD_API double ParserCalc(ParserHandle* handle, const char* variable_names[], double variable_values[], int count);
+NELDERMEAD_API void DestroyParser(ParserHandle* handle);
+
+
+#ifdef __cplusplus
+}
+#endif
