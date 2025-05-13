@@ -36,6 +36,7 @@ class NELDERMEAD_API NelderMead {
  public:
   NelderMead(std::string expression);
   X Solver();
+  X Solver(std::vector<double> init_point);
 
  private:
   void startPoint();
@@ -53,18 +54,18 @@ class NELDERMEAD_API NelderMead {
   double tolerance = 0.000001;
 };
 
-// C-��������� ��� ������ � DLL
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// ������������ ��������� �� ������ NelderMead
 typedef struct NelderMeadHandle NelderMeadHandle;
 
 NELDERMEAD_API NelderMeadHandle* CreateNelderMead(const char* expr);
-NELDERMEAD_API void Solve(NelderMeadHandle* handle, double* output);
+NELDERMEAD_API void SolveBasic(NelderMeadHandle* handle, double* output);
+NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output, double value);
+NELDERMEAD_API void SolveInit(NelderMeadHandle* handle, double* coordinates, double* output);
+NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output, double value);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
-
 #ifdef __cplusplus
 }
 #endif

@@ -11,7 +11,7 @@ class NelderMeadTestFixture : public ::testing::Test {
 protected:
     static HMODULE hDll;
     static CreateNelderMeadFunc CreateNelderMead;
-    static SolveFunc Solve;
+    static SolveFunc SolveBasic;
     static DestroyNelderMeadFunc DestroyNelderMead;
 
     static void SetUpTestSuite() {
@@ -19,11 +19,11 @@ protected:
         ASSERT_TRUE(hDll != nullptr) << "DLL не загружена! Ошибка: " << GetLastError();
 
         CreateNelderMead = (CreateNelderMeadFunc)GetProcAddress(hDll, "CreateNelderMead");
-        Solve = (SolveFunc)GetProcAddress(hDll, "Solve");
+        SolveBasic = (SolveFunc)GetProcAddress(hDll, "SolveBasic");
         DestroyNelderMead = (DestroyNelderMeadFunc)GetProcAddress(hDll, "DestroyNelderMead");
 
         ASSERT_TRUE(CreateNelderMead != nullptr) << "Функция CreateNelderMead не найдена!";
-        ASSERT_TRUE(Solve != nullptr) << "Функция Solve не найдена!";
+        ASSERT_TRUE(SolveBasic != nullptr) << "Функция SolveBasic не найдена!";
         ASSERT_TRUE(DestroyNelderMead != nullptr) << "Функция DestroyNelderMead не найдена!";
     }
 
@@ -39,5 +39,5 @@ protected:
 
 HMODULE NelderMeadTestFixture::hDll = nullptr;
 CreateNelderMeadFunc NelderMeadTestFixture::CreateNelderMead = nullptr;
-SolveFunc NelderMeadTestFixture::Solve = nullptr;
+SolveFunc NelderMeadTestFixture::SolveBasic = nullptr;
 DestroyNelderMeadFunc NelderMeadTestFixture::DestroyNelderMead = nullptr;

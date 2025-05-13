@@ -76,6 +76,18 @@ X NelderMead::Solver() {
   }
   return symplex[dims];
 }
+X NelderMead::Solver(vector<double> init_point) {
+  startPoint(init_point);
+  Sort();
+  int i = 0;
+  while (i < 100000) {
+    chooseBest();
+    Sort();
+    if (abs(symplex.back().value - symplex[0].value) <= tolerance) break;
+    i++;
+  }
+  return symplex[dims];
+}
 void NelderMead::chooseBest() {
   X centroid = computeCentroid();
   X reflected = reflection(centroid, symplex[0]);
@@ -114,6 +126,7 @@ void NelderMead::startPoint() {
 }
 
 void NelderMead::startPoint(vector<double> init_point) {
+  if(init_point.size() !=  dims) throw runtime_error("Incorrect init point");
   symplex.push_back({init_point, function.calc(vectorToMap(init_point))});
   for (size_t i = 0; i < dims; ++i) {
     vector<double> point = init_point;
@@ -140,10 +153,6 @@ X NelderMead::computeCentroid() {
   for (int i = 1; i < symplex.size(); i++) {
     centroid = centroid + symplex[i];
   }
-
-  // for (auto& val : centroid.coordinates) {
-  //   val /= dims;
-  // }
   centroid = centroid / dims;
   centroid.value = calcFunc(centroid);
   return centroid;
@@ -156,34 +165,18 @@ X NelderMead::reflection(X centroid, X worst_point) {
   return result;
 }
 X NelderMead::expansion(const X& centroid, const X& reflected) {
-  // expanded.coordinates.resize(dims);
-  // for (size_t i = 0; i < dims; ++i) {
-  //   expanded.coordinates[i] =
-  //       centroid.coordinates[i] +
-  //       2 * (reflected.coordinates[i] - centroid.coordinates[i]);
-  // }
   X expanded = centroid + (reflected - centroid) * 2;
   expanded.value = calcFunc(expanded);
   return expanded;
 }
 X NelderMead::contraction(const X& centroid, const X& worst) {
   X contracted = centroid + (worst - centroid) * 0.5;
-  // contracted.coordinates.resize(dims);
-  // for (size_t i = 0; i < dims; ++i) {
-  //     contracted.coordinates[i] = centroid.coordinates[i] +
-  //         0.5 * (worst.coordinates[i] - centroid.coordinates[i]);
-  // }
   contracted.value = calcFunc(contracted);
   return contracted;
 }
 void NelderMead::reduction() {
-  // const X& best = symplex[0];
   X best = symplex[0];
   for (size_t i = 1; i < symplex.size(); ++i) {
-    // for (size_t j = 0; j < dims; ++j) {
-    //     symplex[i].coordinates[j] = best.coordinates[j] +
-    //         0.5 * (symplex[i].coordinates[j] - best.coordinates[j]);
-    // }
     symplex[i] = best + (symplex[i] - best);
     symplex[i].value = calcFunc(symplex[i]);
   }
@@ -202,11 +195,37 @@ struct NelderMeadHandle {
 NelderMeadHandle* CreateNelderMead(const char* expr) {
   return new NelderMeadHandle(expr);
 }
-
-void Solve(NelderMeadHandle* handle, double* output) {
+void SolveBasic(NelderMeadHandle* handle, double* output) {
   if (!handle || !output) return;
   X result = handle->solver->Solver();
   std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+}
+void SolveWithValue(NelderMeadHandle* handle, double* output, double value) {
+  if (!handle || !output) return;
+  X result = handle->solver->Solver();
+  std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+  value = result.value;
+}
+void SolveInit(NelderMeadHandle* handle, double* coordinates, double* output) {
+  if (!handle || !output) return;
+  vector<double> input;
+  while(coordinates) {
+    input.push_back(*coordinates);
+    ++coordinates;
+  }
+  X result = handle->solver->Solver(input);
+  std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+}
+void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output, double value) {
+  if (!handle || !output) return;
+  vector<double> input;
+  while(coordinates) {
+    input.push_back(*coordinates);
+    ++coordinates;
+  }
+  X result = handle->solver->Solver(input);
+  std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+  value = result.value;
 }
 
 void DestroyNelderMead(NelderMeadHandle* handle) { delete handle; }

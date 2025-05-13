@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "gtest/gtest.h"
 #include "NelderMeadTestFixture.h"
 #include "ParserTestFixture.h"
@@ -144,7 +144,7 @@ TEST_F(NelderMeadTestFixture, CreateAndDestroySolver) {
 TEST_F(NelderMeadTestFixture, Function1) {
     NelderMeadHandle solver = CreateNelderMead("x1^2 + x1*x2 + x2^2 -6*x1 - 9*x2 ");
     double output[2];
-    Solve(solver, output);
+    SolveBasic(solver, output);
     EXPECT_NEAR(output[0], 1, 1e-3);
     EXPECT_NEAR(output[1], 4, 1e-3);
 }
@@ -156,7 +156,7 @@ TEST_F(NelderMeadTestFixture, RozenbrockFunction) {
         return;
     }
     double output[2];
-    Solve(solver, output);
+    SolveBasic(solver, output);
     EXPECT_NEAR(output[0], 1, 1e-3);
     EXPECT_NEAR(output[1], 1, 1e-3);
 }
@@ -164,7 +164,7 @@ TEST_F(NelderMeadTestFixture, RozenbrockFunction) {
 TEST_F(NelderMeadTestFixture, SquareFunction) {
     NelderMeadHandle solver = CreateNelderMead("x1^2 + 2*x2^2 +3*x3^2");
     double output[3];
-    Solve(solver, output);
+    SolveBasic(solver, output);
     EXPECT_NEAR(output[0], 0, 1e-3);
     EXPECT_NEAR(output[1], 0, 1e-3);
     EXPECT_NEAR(output[2], 0, 1e-3);
@@ -176,7 +176,7 @@ TEST_F(NelderMeadTestFixture, Rosenbrock) {
     ASSERT_NE(handle, nullptr);
 
     double result[2];
-    Solve(handle, result);
+    SolveBasic(handle, result);
 
     EXPECT_NEAR(result[0], 1.0, 1e-3);
     EXPECT_NEAR(result[1], 1.0, 1e-3);
