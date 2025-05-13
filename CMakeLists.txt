@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-project(NelderMeadProject LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.16)
+project(NelderMeadDLL LANGUAGES CXX)
 
 # Установка политик CMake
 cmake_policy(SET CMP0091 NEW) # Для контроля runtime библиотек
@@ -34,41 +34,41 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 # Сборка основной библиотеки
-add_library(NelderMead SHARED 
+add_library(NelderMeadDLL SHARED
     src/NelderMead.cpp
     src/Parser.cpp
     src/library_init.cpp
     src/pch.cpp
 )
 
-target_include_directories(NelderMead
+target_include_directories(NelderMeadDLL
     PRIVATE src
     PUBLIC include
 )
 
 if(UNIX)
-    target_link_libraries(NelderMead PRIVATE m)
+    target_link_libraries(NelderMeadDLL PRIVATE m)
 endif()
 
 # Сборка тестов
 enable_testing()
-add_executable(NelderMeadTests
+add_executable(NelderMeadDLLTests
     test/AllTest.cpp
     test/tests.cpp
 )
 
-target_include_directories(NelderMeadTests PRIVATE include)
-target_link_libraries(NelderMeadTests
+target_include_directories(NelderMeadDLLTests PRIVATE include)
+target_link_libraries(NelderMeadDLLTests
     PRIVATE
-        NelderMead
+        NelderMeadDLL
         gtest_main
 )
 
 # Явное указание runtime библиотек для всех целей
-foreach(target IN ITEMS NelderMead NelderMeadTests)
+foreach(target IN ITEMS NelderMeadDLL NelderMeadDLLTests)
     set_target_properties(${target} PROPERTIES
         MSVC_RUNTIME_LIBRARY "${CMAKE_MSVC_RUNTIME_LIBRARY}"
     )
 endforeach()
 
-add_test(NAME NelderMeadTests COMMAND NelderMeadTests)
+add_test(NAME NelderMeadDLLTests COMMAND NelderMeadDLLTests)
