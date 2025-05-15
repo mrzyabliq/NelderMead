@@ -135,6 +135,8 @@ TEST_F(ParserTestFixture, ComplexExpression) {
     EXPECT_DOUBLE_EQ(EvaluateExpression(parser, variables), 40.0);
 }
 
+//------------NELDER_MEAD_TESTS---------------------------
+
 TEST_F(NelderMeadTestFixture, CreateAndDestroySolver) {
     NelderMeadHandle solver = CreateNelderMead("x^2 + y^2");
     ASSERT_NE(solver, nullptr);
@@ -149,6 +151,7 @@ TEST_F(NelderMeadTestFixture, Function1) {
     EXPECT_NEAR(output[1], 4, 1e-3);
 }
 
+// Тест на функцию Розенброка
 TEST_F(NelderMeadTestFixture, RozenbrockFunction) {
     NelderMeadHandle solver = CreateNelderMead("100*(x1 - x2^2)^2 + (1 - x2)^2");
     if (!solver) {
@@ -159,6 +162,38 @@ TEST_F(NelderMeadTestFixture, RozenbrockFunction) {
     SolveBasic(solver, output);
     EXPECT_NEAR(output[0], 1, 1e-3);
     EXPECT_NEAR(output[1], 1, 1e-3);
+
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, HimmelblauFunction1) {
+    NelderMeadHandle solver = CreateNelderMead("(x1^2 + x2 - 11)^2 + (x1 + x2^2 - 7)^2");
+    double initial[2] = {0, 0};
+    double output[2];
+    SolveInit(solver, initial, output);
+    EXPECT_NEAR(output[0], 3.0, 1e-1);
+    EXPECT_NEAR(output[1], 2.0, 1e-1);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, RastriginFunction2D) {
+    NelderMeadHandle solver = CreateNelderMead("20 + (x1^2 - 10*cos(2*pi*x1)) + (x2^2 - 10*cos(2*pi*x2))");
+    double initial[2] = {2.5, 2.5};
+    double output[2];
+    SolveInit(solver, initial, output);
+    EXPECT_NEAR(output[0], 0, 1e-1);
+    EXPECT_NEAR(output[1], 0, 1e-1);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, BukinFunction) {
+    NelderMeadHandle solver = CreateNelderMead("100*sqrt(abs(x2 - 0.01*x1^2)) + 0.01*abs(x1 + 10)");
+    double initial[2] = {-8, 2};
+    double output[2];
+    SolveInit(solver, initial, output);
+    EXPECT_NEAR(output[0], -10, 1e-1);
+    EXPECT_NEAR(output[1], 1, 1e-1);
+    DestroyNelderMead(solver);
 }
 
 TEST_F(NelderMeadTestFixture, SquareFunction) {
@@ -170,19 +205,120 @@ TEST_F(NelderMeadTestFixture, SquareFunction) {
     EXPECT_NEAR(output[2], 0, 1e-3);
 }
 
-// Тест на функцию Розенброка (известный сложный случай)
-TEST_F(NelderMeadTestFixture, Rosenbrock) {
-    NelderMeadHandle handle = CreateNelderMead("100*(x1 - x2^2)^2 + (1 - x2)^2");
-    ASSERT_NE(handle, nullptr);
-
-    double result[2];
-    SolveBasic(handle, result);
-
-    EXPECT_NEAR(result[0], 1.0, 1e-3);
-    EXPECT_NEAR(result[1], 1.0, 1e-3);
-
-    DestroyNelderMead(handle);
+TEST_F(NelderMeadTestFixture, LinearFunction) {
+    NelderMeadHandle solver = CreateNelderMead("2*x1 + 3*x2");
+    double output[2];
+    SolveBasic(solver, output);
+    // Линейная функция не имеет минимума, но алгоритм должен сойтись к какой-то точке
+    EXPECT_TRUE(std::isfinite(output[0]) && std::isfinite(output[1]));
+    DestroyNelderMead(solver);
 }
+
+TEST_F(NelderMeadTestFixture, QuadraticFunction3D) {
+    NelderMeadHandle solver = CreateNelderMead("x1^2 + x2^2 + x3^2");
+    double output[3];
+    SolveBasic(solver, output);
+    EXPECT_NEAR(output[0], 0, 1e-3);
+    EXPECT_NEAR(output[1], 0, 1e-3);
+    EXPECT_NEAR(output[2], 0, 1e-3);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, 4DFunction) {
+    NelderMeadHandle solver = CreateNelderMead("x1^2 + x2^2 + x3^2 + x4^2");
+    double output[4];
+    SolveBasic(solver, output);
+    for (int i = 0; i < 4; ++i) {
+        EXPECT_NEAR(output[i], 0, 1e-3);
+    }
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, 5DFunction) {
+    NelderMeadHandle solver = CreateNelderMead("x1^2 + x2^2 + x3^2 + x4^2 + x5^2");
+    double output[5];
+    SolveBasic(solver, output);
+    for (int i = 0; i < 5; ++i) {
+        EXPECT_NEAR(output[i], 0, 1e-3);
+    }
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, ExponentialFunction) {
+    NelderMeadHandle solver = CreateNelderMead("exp(x1) + exp(x2)");
+    double output[2];
+    SolveBasic(solver, output);
+    // Минимум в (-∞, -∞), но алгоритм сойдется к некоторым большим отрицательным значениям
+    EXPECT_LT(output[0], -10);
+    EXPECT_LT(output[1], -10);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, TrigonometricFunction) {
+    NelderMeadHandle solver = CreateNelderMead("sin(x1)^2 + cos(x2)^2");
+    double output[2], value;
+    SolveWithValue(solver, output, &value);
+    EXPECT_NEAR(value, 0, 1e-3);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, FunctionValueCheck) {
+    NelderMeadHandle solver = CreateNelderMead("x1^2 + x2^2");
+    double output[2], value;
+    SolveWithValue(solver, output, &value);
+    EXPECT_NEAR(value, 0, 1e-6);
+    EXPECT_NEAR(output[0], 0, 1e-3);
+    EXPECT_NEAR(output[1], 0, 1e-3);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, RosenbrockWithValue) {
+    NelderMeadHandle solver = CreateNelderMead("100*(x2 - x1^2)^2 + (1 - x1)^2");
+    double output[2], value;
+    SolveWithValue(solver, output, &value);
+    EXPECT_NEAR(value, 0, 1e-4);
+    EXPECT_NEAR(output[0], 1, 1e-3);
+    EXPECT_NEAR(output[1], 1, 1e-3);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, LargeCoefficients) {
+    NelderMeadHandle solver = CreateNelderMead("1e12*x1^2 + 1e12*x2^2");
+    double output[2];
+    SolveBasic(solver, output);
+    EXPECT_NEAR(output[0], 0, 1e-3);
+    EXPECT_NEAR(output[1], 0, 1e-3);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, WithInitialPoint) {
+    NelderMeadHandle solver = CreateNelderMead("(x1-3)^2 + (x2-4)^2");
+    double initial[2] = {10, 10};
+    double output[2];
+    SolveInit(solver, initial, output);
+    EXPECT_NEAR(output[0], 3, 1e-3);
+    EXPECT_NEAR(output[1], 4, 1e-3);
+    DestroyNelderMead(solver);
+}
+
+TEST_F(NelderMeadTestFixture, FarInitialPoint) {
+    NelderMeadHandle solver = CreateNelderMead("sin(x1) + cos(x2)");
+    double initial[2] = {100, 100};
+    double output[2], value;
+    SolveFull(solver, initial, output, &value);
+    EXPECT_NEAR(value, -2.0, 1e-2); // Минимум для sin(x)+cos(y)
+    DestroyNelderMead(solver);
+}
+
+
+// TEST_F(NelderMeadTestFixture, DISmallCoefficients) {
+//     NelderMeadHandle solver = CreateNelderMead("1e-12*x1^2 + 1e-12*x2^2");
+//     double output[2];
+//     SolveBasic(solver, output);
+//     EXPECT_NEAR(output[0], 0, 1e-3);
+//     EXPECT_NEAR(output[1], 0, 1e-3);
+//     DestroyNelderMead(solver);
+// }
 
 // Тесты на особые случаи
 // TEST_F(ParserExceptionsTest, DivisionByZero) {
