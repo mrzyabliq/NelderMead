@@ -8,7 +8,7 @@
 -Linux: (добавить)
 ## Запуск тестов и расположение библиотеки (Windows)
 - Запуск тестов: ```runtests.bat``` или ```ctest -C Debug --output-on-failure```
-- Расположениее dll ```build/Debug/NelderMead.dll```
+- Расположениее dll ```build/src/Debug/NelderMead.dll```
 ## Запуск тестов и расположение библиотеки (Linux)
 - Запуск тестов: ```./NelderMeadTests``` или ```ctest -C Debug --output-on-failure```
 - Расположениее dll ```build/libNelderMead.so```
