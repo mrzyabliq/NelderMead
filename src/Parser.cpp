@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "pch.h"
+
+
 using namespace std;
 
 Parser::Parser(string expression) {
@@ -203,7 +205,8 @@ int Parser::parse_expression(int cur_pos) {
   if (name == "sin" || name == "cos" || name == "tan" || name == "cotan" ||
       name == "exp" || name == "abs" || name == "sqrt")
     expression_parsed.push_back({Typess::Function, 0.0, 0, name});
-
+  
+  if(name == "pi") expression_parsed.push_back({Typess::Number, 3.141592653589793});
   return cur_pos;
 }
 

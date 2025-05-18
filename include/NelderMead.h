@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <fstream>
 
 #include "Parser.h"
 
@@ -37,20 +38,25 @@ class NELDERMEAD_API NelderMead {
   NelderMead(std::string expression);
   X Solver();
   X Solver(std::vector<double> init_point);
-
- private:
+  int getDims();
+ 
+  private:
   void startPoint();
   void startPoint(std::vector<double> init_point);
   void Sort();
   void reduction();
   void removeBad(X point);
   void chooseBest();
+  void savePointsToLog(int iteration_num);
+  void startLogFile();
+  void finishLog();
   X computeCentroid();
   X reflection(X centroid, X worst_point);
   X expansion(const X& centroid, const X& reflected);
   X contraction(const X& centroid, const X& worst);
   double calcFunc(X x);
   std::unordered_map<std::string, double> vectorToMap(std::vector<double> coords);
+  std::ofstream outfile;
   double tolerance = 0.000001;
 };
 
@@ -62,9 +68,9 @@ typedef struct NelderMeadHandle NelderMeadHandle;
 
 NELDERMEAD_API NelderMeadHandle* CreateNelderMead(const char* expr);
 NELDERMEAD_API void SolveBasic(NelderMeadHandle* handle, double* output);
-NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output, double value);
+NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output, double* value);
 NELDERMEAD_API void SolveInit(NelderMeadHandle* handle, double* coordinates, double* output);
-NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output, double value);
+NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output, double* value);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
 #ifdef __cplusplus
 }
