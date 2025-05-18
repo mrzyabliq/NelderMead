@@ -52,3 +52,4 @@ _ReSharper.*
 .vscode/
 build/
 Testing/
+logfile.txt
