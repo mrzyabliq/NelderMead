@@ -39,6 +39,7 @@ class NELDERMEAD_API NelderMead {
   X Solver();
   X Solver(std::vector<double> init_point);
   int getDims();
+  std::vector<X> pointsForGraph();
  
   private:
   void startPoint();

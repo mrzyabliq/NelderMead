@@ -192,6 +192,7 @@ void NelderMead::startLogFile() {
   outfile << "-------Started method solving-------" << endl;
 }
 void NelderMead::finishLog() {
+  outfile<<"-------Finished solving-------"<<endl;
   outfile<<"Calculated solution:"<<endl<<"(";
   for (int j = 0; j < symplex[dims].coordinates.size(); j++) {
       outfile << symplex[dims].coordinates[j] << "; ";
@@ -210,6 +211,19 @@ void NelderMead::savePointsToLog(int iteration_num) {
     outfile << ") ";
     outfile << "Calculated value: " << i.value << endl;
   }
+}
+vector<X> NelderMead:: pointsForGraph() {
+  X extremum = symplex[dims];
+  vector<X> points_for_graph;
+  if (dims != 1) throw runtime_error("Can't build graphic (too much dims)");
+  for(int i = -5; i<=5; i++)
+  {
+    X cur_point = extremum;
+    cur_point.coordinates[0]+=i;
+    cur_point.value = calcFunc(cur_point);
+    points_for_graph.push_back(cur_point);
+  }  
+  return points_for_graph;
 }
 
 // C-интерфейс для NelderMead
