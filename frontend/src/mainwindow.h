@@ -23,6 +23,7 @@ private slots:
     void onClearButtonClicked();
     void onHelpButtonClicked();
     void onHistoryItemClicked(QListWidgetItem *item);
+    void onShowLogsClicked();
 
 private:
     Ui::MainWindow *ui;

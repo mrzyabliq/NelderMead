@@ -122,6 +122,19 @@
      <string>Справка</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="showLogsButton">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>270</y>
+      <width>81</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Показать логи</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
