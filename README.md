@@ -6,6 +6,11 @@
 ## Сборка проекта на Windows и Linux
 -Windows: запустите ```buildme.bat``` для сборки проекта
 -Linux: (добавить)
+## Windows Setup
+1) Установите Qt 6.8.2 (MSVC 2022):
+- Скачайте по ссылке: [Qt 6.8.2 MSVC2022](https://disk.yandex.ru/d/_aF-pyYLWEEWRQ)
+- Установите в рекомендуемый путь: `C:/Qt/qtkit/6.8.2-msvc2022`
+- Или установите переменную окружения `QTDIR` на путь к Qt
 ## Запуск тестов и расположение библиотеки (Windows)
 - Запуск тестов: ```runtests.bat``` или ```ctest -C Debug --output-on-failure```
 - Расположениее dll ```build/src/Debug/NelderMead.dll```
