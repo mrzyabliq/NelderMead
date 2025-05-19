@@ -29,6 +29,8 @@ double Parser::calc(unordered_map<string, double> variables) {
 }
 
 void Parser::Parse() {
+  if(this->expression.size() == 0)
+    throw runtime_error("Empty expression");
   int cur_pos = 0;
   while (cur_pos < this->expression.size()) {
     char c = expression[cur_pos];
@@ -68,6 +70,8 @@ void Parser::Parse() {
     }
     num_of_variables = variables_set.size();
   }
+  if(expression_parsed.size() == 0 && num_of_variables == 0)
+    throw runtime_error("Empty expression");
 
 }
 
@@ -180,6 +184,8 @@ int Parser::parse_num(int cur_pos) {
     }
     cur_pos++;
   }
+  if(expression[cur_pos - 1] == '.')
+    throw runtime_error("Invalid number");
   num = (double)num / nums_after_dot;
   expression_parsed.push_back({Typess::Number, num});
   return cur_pos;
@@ -215,7 +221,7 @@ int Parser::parse_arg(int cur_pos) {
          (expression[cur_pos] == '(' || expression[cur_pos] == ' '))
     cur_pos++;
   if (cur_pos == expression.size())
-    throw runtime_error("Ivalid argument of function");
+    throw runtime_error("Invalid argument of function");
   int start_pos = cur_pos;
   while (cur_pos < expression.size() && expression[cur_pos] != ')') cur_pos++;
   if (cur_pos == expression.size()) throw runtime_error("Invalid argument");
