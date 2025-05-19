@@ -2,8 +2,6 @@
 add_library(NelderMead SHARED 
     NelderMead.cpp
     Parser.cpp
-    library_init.cpp
-    pch.cpp
 )
 
 target_include_directories(NelderMead
