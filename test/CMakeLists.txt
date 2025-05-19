@@ -14,9 +14,12 @@ FetchContent_MakeAvailable(googletest)
 # Сборка тестов
 add_executable(NelderMeadTests
     AllTest.cpp
-    tests.cpp
+    ParserTests.cpp
+    ParserExceptionsTests.cpp
+    NelderMeadMethodTests.cpp
     NelderMeadTestFixture.h
     ParserTestFixture.h
+    ParserTestFixture.cpp
 )
 
 target_include_directories(NelderMeadTests 
