@@ -230,11 +230,7 @@ extern "C" {
 #endif
 
 ParserHandle* CreateParser(const char* expr) {
-        try {
-            return reinterpret_cast<ParserHandle*>(new Parser(std::string(expr)));
-        } catch(...) {
-            return nullptr;
-        }
+        return reinterpret_cast<ParserHandle*>(new Parser(std::string(expr)));
     }
 
     double ParserCalc(ParserHandle* handle, const char* variable_names[], double variable_values[], int count) {
