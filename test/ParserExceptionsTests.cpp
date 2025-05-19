@@ -69,7 +69,7 @@ TEST_F(ParserTestFixture, InvalidNumberFormat) {
             DestroyParser(parser);
         }
         catch (const std::runtime_error& e) {
-            EXPECT_NE(std::string(e.what()).find("Invalid number"), std::string::npos);
+            EXPECT_NE(std::string(e.what()).find("Invalid character"), std::string::npos);
             throw;
         }
     }, std::runtime_error);
@@ -121,20 +121,8 @@ TEST_F(ParserTestFixture, UnexpectedTokens) {
 
 // Тест на некорректные имена переменных
 TEST_F(ParserTestFixture, InvalidVariableNames) {
-    // Переменная начинается с цифры
-    std::unordered_map<std::string, double> variables = {{"x1", 5.0}};
 
-    // EXPECT_THROW({
-    //     try {
-    //         ParserHandle parser = CreateParser("1x + 2");
-    //         EvaluateExpression(parser, variables);
-    //         DestroyParser(parser);
-    //     }
-    //     catch (const std::runtime_error& e) {
-    //         EXPECT_NE(std::string(e.what()).find("Invalid argument"), std::string::npos);
-    //         throw;
-    //     }
-    // }, std::runtime_error);
+    std::unordered_map<std::string, double> variables = {{"x1", 5.0}};
     
     // Недопустимые символы в имени
     EXPECT_THROW({
@@ -150,116 +138,60 @@ TEST_F(ParserTestFixture, InvalidVariableNames) {
     }, std::runtime_error);
 }
 
-// // Тест на некорректное использование функций
-// TEST_F(ParserTestFixture, InvalidFunctionUsage) {
-//     // Неизвестная функция
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("unknown(x1)");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Unknown function"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-    
-//     // Неправильные аргументы функции
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("sin()");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Invalid number of arguments"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-    
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("sin(x1, x2)");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Invalid number of arguments"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-// }
+// Тест на некорректные количество переменных
+TEST_F(ParserTestFixture, InvalidCountVariables) {
 
-// // Тест на синтаксические ошибки
-// TEST_F(ParserTestFixture, SyntaxErrors) {
-//     // Два оператора подряд
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("x1 + * x2");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Invalid input"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
+    std::unordered_map<std::string, double> variables = {{"x1", 5.0}};
     
-//     // Оператор в начале выражения
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("* x1 + x2");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Invalid input"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-    
-//     // Оператор в конце выражения
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("x1 + x2 *");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Invalid input"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-// }
+    // Недопустимые символы в имени
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("x1 + x2");
+            EvaluateExpression(parser, variables);
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Invalid input"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
+}
 
-// // Тест на обработку пустого выражения
-// TEST_F(ParserTestFixture, EmptyExpression) {
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Empty expression"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-    
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("   ");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Empty expression"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-// }
+// Тест на синтаксические ошибки
+TEST_F(ParserTestFixture, SyntaxErrors) {
+    // Два оператора подряд
 
-// Тест на некорректные константы
-TEST_F(ParserTestFixture, InvalidConstants) {
-    // Некорректное имя константы
-     std::unordered_map<std::string, double> variables = {};
+    std::unordered_map<std::string, double> variables = {{"x1", 5.0}, {"x2", 0.0}};
 
     EXPECT_THROW({
         try {
-            ParserHandle parser = CreateParser("test");
+            ParserHandle parser = CreateParser("x1 + * x2");
+            EvaluateExpression(parser, variables);
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Unexpected token"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
+    
+    // Оператор в начале выражения
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("* x1 + x2");
+            EvaluateExpression(parser, variables);
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Unexpected token"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
+    
+    // Оператор в конце выражения
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("x1 + x2 *");
             EvaluateExpression(parser, variables);
             DestroyParser(parser);
         }
@@ -270,27 +202,74 @@ TEST_F(ParserTestFixture, InvalidConstants) {
     }, std::runtime_error);
 }
 
-// // Тест на некорректное возведение в степень
-// TEST_F(ParserTestFixture, InvalidExponentiation) {
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("2 ^ ^ 3");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Invalid input"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
+// Тест на обработку пустого выражения
+TEST_F(ParserTestFixture, EmptyExpression) {
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("");
+            EvaluateExpression(parser, {});
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Empty expression"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
     
-//     EXPECT_THROW({
-//         try {
-//             ParserHandle parser = CreateParser("^3");
-//             DestroyParser(parser);
-//         }
-//         catch (const std::runtime_error& e) {
-//             EXPECT_NE(std::string(e.what()).find("Invalid input"), std::string::npos);
-//             throw;
-//         }
-//     }, std::runtime_error);
-// }
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("      ");
+            EvaluateExpression(parser, {});
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Empty expression"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
+}
+
+// Тест на некорректные константы
+TEST_F(ParserTestFixture, InvalidConstants) {
+    // Некорректное имя константы
+     std::unordered_map<std::string, double> variables = {{"x1", 5.0}};
+
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("x1 + test");
+            EvaluateExpression(parser, variables);
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Unexpected token"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
+}
+
+// Тест на некорректное возведение в степень
+TEST_F(ParserTestFixture, InvalidExponentiation) {
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("2 ^ ^ 3");
+            EvaluateExpression(parser, {});
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Unexpected token"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
+    
+    EXPECT_THROW({
+        try {
+            ParserHandle parser = CreateParser("^3");
+            EvaluateExpression(parser, {});
+            DestroyParser(parser);
+        }
+        catch (const std::runtime_error& e) {
+            EXPECT_NE(std::string(e.what()).find("Unexpected token"), std::string::npos);
+            throw;
+        }
+    }, std::runtime_error);
+}
