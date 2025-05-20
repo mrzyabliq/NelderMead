@@ -40,7 +40,7 @@ class NELDERMEAD_API NelderMead {
   X Solver(std::vector<double> init_point);
   int getDims();
   std::vector<X> pointsForGraph();
- 
+  std::vector<double> getHistory();
   private:
   void startPoint();
   void startPoint(std::vector<double> init_point);
@@ -51,6 +51,8 @@ class NELDERMEAD_API NelderMead {
   void savePointsToLog(int iteration_num);
   void startLogFile();
   void finishLog();
+  void saveHistory();
+  void clearHistory();
   X computeCentroid();
   X reflection(X centroid, X worst_point);
   X expansion(const X& centroid, const X& reflected);
@@ -59,6 +61,7 @@ class NELDERMEAD_API NelderMead {
   std::unordered_map<std::string, double> vectorToMap(std::vector<double> coords);
   std::ofstream outfile;
   double tolerance = 0.000001;
+  std::vector<double> history;
 };
 
 #ifdef __cplusplus
@@ -73,6 +76,7 @@ NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output, dou
 NELDERMEAD_API void SolveInit(NelderMeadHandle* handle, double* coordinates, double* output);
 NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output, double* value);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
+NELDERMEAD_API void GetPointsForGraph(NelderMeadHandle* handle, double* ouput);
 #ifdef __cplusplus
 }
 #endif
