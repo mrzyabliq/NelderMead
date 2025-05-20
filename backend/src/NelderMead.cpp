@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "pch.h"
 
 using namespace std;
 
@@ -65,14 +64,17 @@ NelderMead::NelderMead(string expression) {
 }
 
 X NelderMead::Solver() {
+  clearHistory();
   startPoint();
   Sort();
   int i = 0;
   startLogFile();
   savePointsToLog(i);
+  saveHistory();
   while (i < 100000) {
     chooseBest();
     Sort();
+    saveHistory();
     if (abs(symplex.back().value - symplex[0].value) <= tolerance) break;
     i++;
     savePointsToLog(i);
@@ -82,7 +84,7 @@ X NelderMead::Solver() {
 }
 X NelderMead::Solver(vector<double> init_point) {
   startPoint(init_point);
-  
+
   Sort();
   int i = 0;
   while (i < 100000) {
@@ -135,7 +137,7 @@ void NelderMead::startPoint(vector<double> init_point) {
   symplex.push_back({init_point, function.calc(vectorToMap(init_point))});
   for (size_t i = 0; i < dims; ++i) {
     vector<double> point = init_point;
-    point[i] += 0.05 * point[i] == 0? 1:point[i];
+    point[i] += 0.05 * point[i] == 0 ? 1 : point[i];
     symplex.push_back({point, function.calc(vectorToMap(point))});
   }
 }
@@ -151,7 +153,7 @@ unordered_map<string, double> NelderMead::vectorToMap(vector<double> coords) {
   }
   return variables;
 }
-int NelderMead::getDims() { return dims;}
+int NelderMead::getDims() { return dims; }
 
 void NelderMead::Sort() { sort(symplex.rbegin(), symplex.rend()); }
 X NelderMead::computeCentroid() {
@@ -192,17 +194,17 @@ void NelderMead::startLogFile() {
   outfile << "-------Started method solving-------" << endl;
 }
 void NelderMead::finishLog() {
-  outfile<<"-------Finished solving-------"<<endl;
-  outfile<<"Calculated solution:"<<endl<<"(";
+  outfile << "-------Finished solving-------" << endl;
+  outfile << "Calculated solution:" << endl << "(";
   for (int j = 0; j < symplex[dims].coordinates.size(); j++) {
-      outfile << symplex[dims].coordinates[j] << "; ";
+    outfile << symplex[dims].coordinates[j] << "; ";
   }
-  outfile<<") "<<endl;
-  outfile<<"Value: "<<symplex[dims].value;
+  outfile << ") " << endl;
+  outfile << "Value: " << symplex[dims].value;
   outfile.close();
 }
 void NelderMead::savePointsToLog(int iteration_num) {
-  outfile<<iteration_num<<" iteration"<<endl;
+  outfile << iteration_num << " iteration" << endl;
   for (auto i : symplex) {
     outfile << "    (";
     for (int j = 0; j < i.coordinates.size(); j++) {
@@ -212,17 +214,24 @@ void NelderMead::savePointsToLog(int iteration_num) {
     outfile << "Calculated value: " << i.value << endl;
   }
 }
-vector<X> NelderMead:: pointsForGraph() {
+void NelderMead::saveHistory() { history.push_back(symplex[dims].value); }
+vector<double> NelderMead::getHistory() {
+  if (history.size() == 0)
+    throw runtime_error("History is empty");
+  else
+    return history;
+}
+void NelderMead::clearHistory() { history.clear(); }
+vector<X> NelderMead::pointsForGraph() {
   X extremum = symplex[dims];
   vector<X> points_for_graph;
   if (dims != 1) throw runtime_error("Can't build graphic (too much dims)");
-  for(int i = -5; i<=5; i++)
-  {
+  for (int i = -5; i <= 5; i++) {
     X cur_point = extremum;
-    cur_point.coordinates[0]+=i;
+    cur_point.coordinates[0] += i;
     cur_point.value = calcFunc(cur_point);
     points_for_graph.push_back(cur_point);
-  }  
+  }
   return points_for_graph;
 }
 
@@ -242,35 +251,48 @@ NelderMeadHandle* CreateNelderMead(const char* expr) {
 void SolveBasic(NelderMeadHandle* handle, double* output) {
   if (!handle || !output) return;
   X result = handle->solver->Solver();
-  std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+  copy(result.coordinates.begin(), result.coordinates.end(), output);
 }
 void SolveWithValue(NelderMeadHandle* handle, double* output, double* value) {
   if (!handle || !output) return;
   X result = handle->solver->Solver();
-  std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+  copy(result.coordinates.begin(), result.coordinates.end(), output);
   *value = result.value;
 }
 void SolveInit(NelderMeadHandle* handle, double* coordinates, double* output) {
   if (!handle || !output) return;
   vector<double> input;
-  for(int i = 0; i<handle->solver->getDims(); i++)
-  {
+  for (int i = 0; i < handle->solver->getDims(); i++) {
     input.push_back(coordinates[i]);
   }
   X result = handle->solver->Solver(input);
-  std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+  copy(result.coordinates.begin(), result.coordinates.end(), output);
 }
 void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output,
                double* value) {
   if (!handle || !output) return;
   vector<double> input;
-  for(int i = 0; i<handle->solver->getDims(); i++)
-  {
+  for (int i = 0; i < handle->solver->getDims(); i++) {
     input.push_back(coordinates[i]);
   }
   X result = handle->solver->Solver(input);
-  std::copy(result.coordinates.begin(), result.coordinates.end(), output);
+  copy(result.coordinates.begin(), result.coordinates.end(), output);
   *value = result.value;
+}
+void GetPointsForGraph(NelderMeadHandle* handle, double* output, int maxSize) {
+    if (!handle || !output) return;
+
+    vector<double> history = handle->solver->getHistory();
+    int pointsToCopy = min(maxSize, static_cast<int>(history.size()));
+
+    for (int i = 0; i < pointsToCopy; ++i) {
+        output[i] = history[i];
+    }
+
+    // Заполняем остаток нулями (если maxSize > history.size())
+    for (int i = pointsToCopy; i < maxSize; ++i) {
+        output[i] = 0.0;
+    }
 }
 
 void DestroyNelderMead(NelderMeadHandle* handle) { delete handle; }

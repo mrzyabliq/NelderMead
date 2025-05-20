@@ -1,69 +1,126 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include <QDateTime>
 #include <QProcess>    // Для запуска блокнота
 #include <QFile>
-
-#include <NelderMead.h>
+#include <vector>
+#include <stdexcept>
+#include <algorithm> 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow), solverHandle(nullptr),
+      needGraphUpdate(false)
 {
     ui->setupUi(this);
 
+    // Соединения сигналов и слотов
     connect(ui->calcBut, &QPushButton::clicked, this, &MainWindow::onSendButtonClicked);
     connect(ui->clearBut, &QPushButton::clicked, this, &MainWindow::onClearButtonClicked);
     connect(ui->helpBut, &QPushButton::clicked, this, &MainWindow::onHelpButtonClicked);
     connect(ui->showLogsButton, &QPushButton::clicked, this, &MainWindow::onShowLogsClicked);
-
+    connect(ui->showGraphButton, &QPushButton::clicked, this, &MainWindow::onShowGraphClicked);
     connect(ui->historyListWidget, &QListWidget::itemClicked, this, &MainWindow::onHistoryItemClicked);
 }
 
 MainWindow::~MainWindow()
 {
+    cleanupSolver();
     delete ui;
 }
+void MainWindow::cleanupSolver()
+{
+    if (solverHandle) {
+        DestroyNelderMead(solverHandle);
+        solverHandle = nullptr;
+    }
+    needGraphUpdate = false;
+}
+
 void MainWindow::onSendButtonClicked()
 {
     QString inputText = ui->inputLineEdit->text().trimmed();
-
+    
     if (inputText.isEmpty()) {
         QMessageBox::warning(this, "Ошибка", "Поле ввода пустое!");
         return;
     }
 
-    // Проверяем, что используются только x1, x2, ..., xn
-    QRegularExpression varRegex(R"(\b(?!x\d+\b)[a-zA-Z_]\w*\b)"); // Ищет другие переменные
-    if (varRegex.match(inputText).hasMatch()) {
-        QMessageBox::warning(
-            this,
-            "Ошибка",
-            "Используйте только переменные вида x1, x2, ..., xn!\n"
-            "Пример: x1^2 + sin(x2) + 3*x3"
-            );
-        return;
-    }
+    cleanupSolver();
+    needGraphUpdate = true;
 
     try {
-        NelderMead solver(inputText.toStdString());
-        X result = solver.Solver();
-
+        // Создаем решатель
+        solverHandle = CreateNelderMead(inputText.toStdString().c_str());
+        
+        // Определяем размерность задачи
+        const int MAX_DIMS = 10;
+        double testOutput[MAX_DIMS];
+        SolveBasic(solverHandle, testOutput);
+        
+        // Получаем результат
+        std::vector<double> result(MAX_DIMS);
+        double funcValue;
+        SolveWithValue(solverHandle, result.data(), &funcValue);
+        
+        // Формируем строку результата
         QString resultStr;
-        for (size_t i = 0; i < result.coordinates.size(); ++i) {
+        for (size_t i = 0; i < result.size() && result[i] != 0; ++i) {
             if (i > 0) resultStr += ", ";
-            resultStr += QString("x%1 = %2").arg(i + 1).arg(result.coordinates[i]);
+            resultStr += QString("x%1 = %2").arg(i + 1).arg(result[i]);
         }
-        resultStr += QString("\nЗначение функции: %1").arg(result.value);
-
+        resultStr += QString("\nЗначение функции: %1").arg(funcValue);
+        
         ui->outputLineEdit->setText(resultStr);
         addToHistory(inputText + " → " + resultStr);
+        
     } catch (const std::exception& e) {
         QMessageBox::critical(this, "Ошибка", QString("Ошибка вычисления: %1").arg(e.what()));
     }
 }
+
+void MainWindow::onShowGraphClicked() {
+    if (!solverHandle) {
+        QMessageBox::warning(this, "Ошибка", "Сначала выполните оптимизацию");
+        return;
+    }
+
+    try {
+        const int MAX_POINTS = 1000;
+        double output[MAX_POINTS] = {0};
+
+        // Передаём output и MAX_POINTS в функцию
+        GetPointsForGraph(solverHandle, output, MAX_POINTS);
+
+        // Собираем данные для графика (игнорируем нули)
+        std::vector<double> history;
+        for (int i = 0; i < MAX_POINTS && output[i] != 0; ++i) {
+            history.push_back(output[i]);
+        }
+
+        if (history.empty()) {
+            QMessageBox::information(this, "Информация", 
+                "Нет данных для графика. Возможно:\n"
+                "1. Оптимизация сошлась за 1 итерацию\n"
+                "2. История не записывалась (проверьте NelderMead.cpp)");
+            return;
+        }
+
+        // Создаём и настраиваем окно графика
+        GraphWindow* graphWindow = new GraphWindow();
+        graphWindow->setAttribute(Qt::WA_DeleteOnClose);
+        graphWindow->setHistoryData(history);
+        graphWindow->setWindowTitle("График для: " + ui->inputLineEdit->text());
+        graphWindow->show();
+
+        needGraphUpdate = false;
+
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Ошибка", 
+            QString("Ошибка при построении графика:\n%1").arg(e.what()));
+    }
+}
+
 void MainWindow::onShowLogsClicked() {
     // Путь к файлу логов (в папке build/bin/Release)
     QString logPath = QCoreApplication::applicationDirPath() + "/logfile.txt";

@@ -57,8 +57,3 @@ protected:
         return Calc(parser, names.data(), values.data(), static_cast<int>(vars.size()));
     }
 };
-
-HMODULE ParserTestFixture::hDll = nullptr;
-ParserTestFixture::CreateParserFunc ParserTestFixture::CreateParser = nullptr;
-ParserTestFixture::ParserCalcFunc ParserTestFixture::Calc = nullptr;
-ParserTestFixture::DestroyParserFunc ParserTestFixture::DestroyParser = nullptr;

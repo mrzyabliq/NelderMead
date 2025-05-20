@@ -1,14 +1,22 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QListWidgetItem>
-
-// Предварительные объявления
-namespace Ui {
-class MainWindow;
+#include <QRegularExpression>
+#include "ui_mainwindow.h"
+#include "NelderMead.h"
+#include <memory>
+#include <vector>
+#include "graphwindow.h"
+extern "C" {
+    typedef struct NelderMeadHandle NelderMeadHandle;
+    NELDERMEAD_API NelderMeadHandle* CreateNelderMead(const char* expr);
+    NELDERMEAD_API void SolveBasic(NelderMeadHandle* handle, double* output);
+    NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output, double* value);
+    NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
+    NELDERMEAD_API void GetPointsForGraph(NelderMeadHandle* handle, double* output, int maxSize);
 }
-class LogViewerDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -22,13 +30,15 @@ private slots:
     void onSendButtonClicked();
     void onClearButtonClicked();
     void onHelpButtonClicked();
-    void onHistoryItemClicked(QListWidgetItem *item);
     void onShowLogsClicked();
+    void onShowGraphClicked();
+    void onHistoryItemClicked(QListWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;
-
+    NelderMeadHandle* solverHandle;
+    bool needGraphUpdate;
     void addToHistory(const QString &text);
+    void cleanupSolver();
 };
 
-#endif // MAINWINDOW_H
