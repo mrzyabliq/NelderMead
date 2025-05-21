@@ -59,3 +59,10 @@ add_custom_target(run
     WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     DEPENDS NelderMeadFrontend
 )
+
+# Включаем тесты
+option(BUILD_TESTS "Build tests" ON)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif()
