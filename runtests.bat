@@ -1,1 +1,1 @@
-.\build\test\Debug\NelderMeadTests.exe
+.\build\bin\Debug\NelderMeadTests.exe
