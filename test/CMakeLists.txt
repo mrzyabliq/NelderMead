@@ -28,7 +28,7 @@ target_include_directories(NelderMeadTests
 
 target_link_libraries(NelderMeadTests
     PRIVATE
-        NelderMead
+        NelderMeadBackend
         gtest_main
 )
 
@@ -44,7 +44,7 @@ add_test(NAME NelderMeadTests COMMAND NelderMeadTests)
 if(WIN32)
     add_custom_command(TARGET NelderMeadTests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-            $<TARGET_FILE:NelderMead>
+            $<TARGET_FILE:NelderMeadBackend>
             $<TARGET_FILE_DIR:NelderMeadTests>
     )
 endif()
