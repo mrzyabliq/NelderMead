@@ -22,7 +22,7 @@ protected:
     static DestroyNelderMeadFunc DestroyNelderMead;
 
     static void SetUpTestSuite() {
-        hDll = LoadLibraryW(L"NelderMead.dll");
+        hDll = LoadLibraryW(L"NelderMeadBackend.dll");
         ASSERT_TRUE(hDll != nullptr) << "DLL не загружена! Ошибка: " << GetLastError();
 
         CreateNelderMead = (CreateNelderMeadFunc)GetProcAddress(hDll, "CreateNelderMead");
