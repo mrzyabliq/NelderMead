@@ -11,14 +11,12 @@ if not defined choice set choice=1
 
 if "%choice%"=="2" (
     set CONFIG=Debug
-    set EXE_SUFFIX=_debug
 ) else (
     if not "%choice%"=="1" (
         echo Invalid choice, please try again
         goto config_select
     )
     set CONFIG=Release
-    set EXE_SUFFIX=
 )
 
 :: 2. Clean previous build
@@ -61,11 +59,11 @@ if errorlevel 1 (
 
 :: 4. Run application
 echo Looking for executable...
-set EXE_PATH=bin\%CONFIG%\NelderMeadFrontend%EXE_SUFFIX%.exe
+set EXE_PATH=bin\%CONFIG%\NelderMeadFrontend.exe
 
 if exist "%EXE_PATH%" (
     echo Starting application...
-    start "" "%cd%\%EXE_PATH%"
+    .\%EXE_PATH%
 ) else (
     echo Error: Could not find executable file at "%EXE_PATH%"
     echo Available files in bin\%CONFIG%\:
