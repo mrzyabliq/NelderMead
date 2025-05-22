@@ -19,7 +19,7 @@ protected:
     static DestroyParserFunc DestroyParser;
 
     static void SetUpTestSuite() {
-        hDll = LoadLibraryW(L"NelderMead.dll");
+        hDll = LoadLibraryW(L"NelderMeadBackend.dll");
         ASSERT_TRUE(hDll != nullptr) 
             << "DLL load failed. Error: " << GetLastError();
 
