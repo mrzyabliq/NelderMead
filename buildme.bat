@@ -1,27 +1,39 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
 :: 1. Configuration selection
+:config_select
 echo Select build configuration:
 echo 1 - Release (default)
 echo 2 - Debug
 set /p choice="Enter number [1-2]: "
+if not defined choice set choice=1
 
 if "%choice%"=="2" (
     set CONFIG=Debug
+    set EXE_SUFFIX=_debug
 ) else (
+    if not "%choice%"=="1" (
+        echo Invalid choice, please try again
+        goto config_select
+    )
     set CONFIG=Release
+    set EXE_SUFFIX=
 )
 
 :: 2. Clean previous build
-if exist "build\" rmdir /s /q build
-if errorlevel 1 (
-    echo Error: Failed to clean build directory
-    pause
-    exit /b 1
+echo Cleaning previous build...
+if exist "build" (
+    rmdir /s /q build
+    if errorlevel 1 (
+        echo Error: Failed to clean build directory
+        pause
+        exit /b 1
+    )
 )
 
 :: 3. Build project
+echo Creating build directory...
 mkdir build
 if errorlevel 1 (
     echo Error: Failed to create build directory
@@ -30,14 +42,17 @@ if errorlevel 1 (
 )
 
 cd build
-cmake ..
+
+echo Configuring project with CMake...
+cmake .. -DCMAKE_BUILD_TYPE=%CONFIG%
 if errorlevel 1 (
     echo Error: CMake configuration failed
     pause
     exit /b 1
 )
 
-cmake --build . --config %CONFIG%
+echo Building project (%CONFIG%)...
+cmake --build . --config %CONFIG% -- /m
 if errorlevel 1 (
     echo Error: Build failed
     pause
@@ -45,11 +60,16 @@ if errorlevel 1 (
 )
 
 :: 4. Run application
-if exist "bin\%CONFIG%\NelderMeadFrontend.exe" (
-    cd bin\%CONFIG%
-    start NelderMeadFrontend.exe
+echo Looking for executable...
+set EXE_PATH=bin\%CONFIG%\NelderMeadFrontend%EXE_SUFFIX%.exe
+
+if exist "%EXE_PATH%" (
+    echo Starting application...
+    start "" "%cd%\%EXE_PATH%"
 ) else (
-    echo Error: Could not find executable file
+    echo Error: Could not find executable file at "%EXE_PATH%"
+    echo Available files in bin\%CONFIG%\:
+    dir /b bin\%CONFIG%\
     pause
     exit /b 1
 )
