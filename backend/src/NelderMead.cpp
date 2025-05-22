@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-
 using namespace std;
 
 // Структура для хранения переменной
@@ -63,8 +62,10 @@ NelderMead::NelderMead(string expression) {
   dims = function.num_of_variables;
 }
 
-X NelderMead::Solver() {
+X NelderMead::Solver(double tolerance = 0.000001, double alpha = 1,
+                     double beta = 0.5, double gamma = 2, double sigma = 1) {
   symplex = {};
+  initKoefs(alpha, beta, gamma, sigma);
   clearHistory();
   startPoint();
   Sort();
@@ -83,9 +84,11 @@ X NelderMead::Solver() {
   finishLog();
   return symplex[dims];
 }
-X NelderMead::Solver(vector<double> init_point) {
+X NelderMead::Solver(vector<double> init_point, double tolerance = 0.000001,
+                     double alpha = 1, double beta = 0.5, double gamma = 2,
+                     double sigma = 1) {
   startPoint(init_point);
-
+  initKoefs(alpha, beta, gamma, sigma);
   Sort();
   int i = 0;
   while (i < 100000) {
@@ -169,31 +172,31 @@ X NelderMead::computeCentroid() {
 
 X NelderMead::reflection(X centroid, X worst_point) {
   X result;
-  result = centroid + (centroid - worst_point);
+  result = centroid + (centroid - worst_point) * alpha;
   result.value = calcFunc(result);
   return result;
 }
 X NelderMead::expansion(const X& centroid, const X& reflected) {
-  X expanded = centroid + (reflected - centroid) * 2;
+  X expanded = centroid + (reflected - centroid) * gamma;
   expanded.value = calcFunc(expanded);
   return expanded;
 }
 X NelderMead::contraction(const X& centroid, const X& worst) {
-  X contracted = centroid + (worst - centroid) * 0.5;
+  X contracted = centroid + (worst - centroid) * beta;
   contracted.value = calcFunc(contracted);
   return contracted;
 }
 void NelderMead::reduction() {
   X best = symplex[0];
   for (size_t i = 1; i < symplex.size(); ++i) {
-    symplex[i] = best + (symplex[i] - best);
+    symplex[i] = best + (symplex[i] - best) * sigma;
     symplex[i].value = calcFunc(symplex[i]);
   }
 }
 void NelderMead::startLogFile() {
   outfile.open("logfile.txt", ios::out | ios::trunc);
   outfile << "-------Started method solving-------" << endl;
-  outfile << "Calculated dims: "<<dims<<endl;
+  outfile << "Calculated dims: " << dims << endl;
 }
 void NelderMead::finishLog() {
   outfile << "-------Finished solving-------" << endl;
@@ -236,6 +239,13 @@ vector<X> NelderMead::pointsForGraph() {
   }
   return points_for_graph;
 }
+void NelderMead::initKoefs(double alpha, double beta, double gamma,
+                           double sigma) {
+  this->alpha = alpha;
+  this->beta = beta;
+  this->gamma = gamma;
+  this->sigma = sigma;
+}
 
 // C-интерфейс для NelderMead
 #ifdef __cplusplus
@@ -250,9 +260,7 @@ struct NelderMeadHandle {
 NelderMeadHandle* CreateNelderMead(const char* expr) {
   return new NelderMeadHandle(expr);
 }
-int getDims(NelderMeadHandle* handle) {
-  return handle->solver->getDims();
-}
+int getDims(NelderMeadHandle* handle) { return handle->solver->getDims(); }
 void SolveBasic(NelderMeadHandle* handle, double* output) {
   if (!handle || !output) return;
   X result = handle->solver->Solver();
@@ -284,20 +292,39 @@ void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output,
   copy(result.coordinates.begin(), result.coordinates.end(), output);
   *value = result.value;
 }
+void SolveWithKoefs(NelderMeadHandle* handle, double alpha, double beta,
+                    double gamma, double sigma, double* output, double* value) {
+  if (!handle || !output) return;
+  X result = handle->solver->Solver(alpha, beta, gamma, sigma);
+  copy(result.coordinates.begin(), result.coordinates.end(), output);
+  *value = result.value;
+}
+void SolveFullKoefs(NelderMeadHandle* handle, double* coordinates, double alpha,
+                    double beta, double gamma, double sigma, double* output,
+                    double* value) {
+  if (!handle || !output) return;
+  vector<double> input;
+  for (int i = 0; i < handle->solver->getDims(); i++) {
+    input.push_back(coordinates[i]);
+  }
+  X result = handle->solver->Solver(input, alpha, beta, gamma, sigma);
+  copy(result.coordinates.begin(), result.coordinates.end(), output);
+  *value = result.value;
+}
 void GetPointsForGraph(NelderMeadHandle* handle, double* output, int maxSize) {
-    if (!handle || !output) return;
+  if (!handle || !output) return;
 
-    vector<double> history = handle->solver->getHistory();
-    int pointsToCopy = min(maxSize, static_cast<int>(history.size()));
+  vector<double> history = handle->solver->getHistory();
+  int pointsToCopy = min(maxSize, static_cast<int>(history.size()));
 
-    for (int i = 0; i < pointsToCopy; ++i) {
-        output[i] = history[i];
-    }
+  for (int i = 0; i < pointsToCopy; ++i) {
+    output[i] = history[i];
+  }
 
-    // Заполняем остаток нулями (если maxSize > history.size())
-    for (int i = pointsToCopy; i < maxSize; ++i) {
-        output[i] = 0.0;
-    }
+  // Заполняем остаток нулями (если maxSize > history.size())
+  for (int i = pointsToCopy; i < maxSize; ++i) {
+    output[i] = 0.0;
+  }
 }
 
 void DestroyNelderMead(NelderMeadHandle* handle) { delete handle; }

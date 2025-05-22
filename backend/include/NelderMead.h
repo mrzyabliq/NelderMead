@@ -1,11 +1,10 @@
 #pragma once
+#include <fstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <fstream>
 
 #include "Parser.h"
-
 
 #ifdef _WIN32
 #ifdef NELDERMEAD_EXPORTS
@@ -36,12 +35,13 @@ class NELDERMEAD_API NelderMead {
 
  public:
   NelderMead(std::string expression);
-  X Solver();
-  X Solver(std::vector<double> init_point);
+  X Solver(double tolerance, double alpha, double beta, double gamma, double sigma);
+  X Solver(std::vector<double> init_point, double tolerance, double alpha, double beta, double gamma, double sigma);
   int getDims();
   std::vector<X> pointsForGraph();
   std::vector<double> getHistory();
-  private:
+
+ private:
   void startPoint();
   void startPoint(std::vector<double> init_point);
   void Sort();
@@ -53,15 +53,21 @@ class NELDERMEAD_API NelderMead {
   void finishLog();
   void saveHistory();
   void clearHistory();
+  void initKoefs(double alpha, double beta, double gamma, double sigma);
   X computeCentroid();
   X reflection(X centroid, X worst_point);
   X expansion(const X& centroid, const X& reflected);
   X contraction(const X& centroid, const X& worst);
   double calcFunc(X x);
-  std::unordered_map<std::string, double> vectorToMap(std::vector<double> coords);
+  std::unordered_map<std::string, double> vectorToMap(
+      std::vector<double> coords);
   std::ofstream outfile;
-  double tolerance = 0.000001;
+  double tolerance;
   std::vector<double> history;
+  double alpha;
+  double beta;
+  double gamma;
+  double sigma;
 };
 
 #ifdef __cplusplus
@@ -72,11 +78,15 @@ typedef struct NelderMeadHandle NelderMeadHandle;
 
 NELDERMEAD_API NelderMeadHandle* CreateNelderMead(const char* expr);
 NELDERMEAD_API void SolveBasic(NelderMeadHandle* handle, double* output);
-NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output, double* value);
-NELDERMEAD_API void SolveInit(NelderMeadHandle* handle, double* coordinates, double* output);
-NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output, double* value);
+NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output,
+                                   double* value);
+NELDERMEAD_API void SolveInit(NelderMeadHandle* handle, double* coordinates,
+                              double* output);
+NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates,
+                              double* output, double* value);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
-NELDERMEAD_API void GetPointsForGraph(NelderMeadHandle* handle, double* output, int maxSize);
+NELDERMEAD_API void GetPointsForGraph(NelderMeadHandle* handle, double* output,
+                                      int maxSize);
 NELDERMEAD_API int getDims(NelderMeadHandle* handle);
 #ifdef __cplusplus
 }
