@@ -50,12 +50,13 @@ void MainWindow::onSendButtonClicked()
     needGraphUpdate = true;
 
     try {
+        cleanupSolver();
         // Создаем решатель
         solverHandle = CreateNelderMead(inputText.toStdString().c_str());
         
         // Определяем размерность задачи
-        const int MAX_DIMS = 10;
-        double testOutput[MAX_DIMS];
+        int MAX_DIMS = getDims(solverHandle);
+        double* testOutput = (double*)malloc(MAX_DIMS * sizeof(double));
         SolveBasic(solverHandle, testOutput);
         
         // Получаем результат

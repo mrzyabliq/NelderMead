@@ -64,6 +64,7 @@ NelderMead::NelderMead(string expression) {
 }
 
 X NelderMead::Solver() {
+  symplex = {};
   clearHistory();
   startPoint();
   Sort();
@@ -192,6 +193,7 @@ void NelderMead::reduction() {
 void NelderMead::startLogFile() {
   outfile.open("logfile.txt", ios::out | ios::trunc);
   outfile << "-------Started method solving-------" << endl;
+  outfile << "Calculated dims: "<<dims<<endl;
 }
 void NelderMead::finishLog() {
   outfile << "-------Finished solving-------" << endl;
@@ -247,6 +249,9 @@ struct NelderMeadHandle {
 
 NelderMeadHandle* CreateNelderMead(const char* expr) {
   return new NelderMeadHandle(expr);
+}
+int getDims(NelderMeadHandle* handle) {
+  return handle->solver->getDims();
 }
 void SolveBasic(NelderMeadHandle* handle, double* output) {
   if (!handle || !output) return;

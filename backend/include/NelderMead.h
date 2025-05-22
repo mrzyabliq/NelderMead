@@ -77,6 +77,7 @@ NELDERMEAD_API void SolveInit(NelderMeadHandle* handle, double* coordinates, dou
 NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output, double* value);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
 NELDERMEAD_API void GetPointsForGraph(NelderMeadHandle* handle, double* output, int maxSize);
+NELDERMEAD_API int getDims(NelderMeadHandle* handle);
 #ifdef __cplusplus
 }
 #endif
