@@ -6,9 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
+    <width>440</width>
     <height>449</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <bold>true</bold>
+   </font>
+  </property>
+  <property name="cursor">
+   <cursorShape>CrossCursor</cursorShape>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -19,7 +28,7 @@
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>111</width>
+      <width>121</width>
       <height>16</height>
      </rect>
     </property>
@@ -78,7 +87,7 @@
      <rect>
       <x>20</x>
       <y>290</y>
-      <width>311</width>
+      <width>301</width>
       <height>111</height>
      </rect>
     </property>
@@ -99,9 +108,9 @@
    <widget class="QPushButton" name="clearBut">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>260</x>
       <y>90</y>
-      <width>61</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
@@ -112,10 +121,10 @@
    <widget class="QPushButton" name="helpBut">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>380</y>
-      <width>71</width>
-      <height>24</height>
+      <x>330</x>
+      <y>370</y>
+      <width>91</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -125,9 +134,9 @@
    <widget class="QPushButton" name="showLogsButton">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>90</y>
-      <width>141</width>
+      <x>330</x>
+      <y>330</y>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
@@ -148,16 +157,35 @@
      <string>График</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="paramsButton">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>90</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Параметры</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>441</width>
+     <width>440</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuNelder">
+    <property name="title">
+     <string>Nelder Mead</string>
+    </property>
+   </widget>
+   <addaction name="menuNelder"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

@@ -13,10 +13,17 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
       solverHandle(nullptr),
-      needGraphUpdate(false) {
+      needGraphUpdate(false)
+      {
   ui->setupUi(this);
 
-  // Соединения сигналов и слотов
+    alpha = 1.0;
+    beta = 0.5;
+    gamma = 2.0;
+    sigma = 1.0;
+    tolerance = 0.000001;
+    startPoint = "";
+
   connect(ui->calcBut, &QPushButton::clicked, this,
           &MainWindow::onSendButtonClicked);
   connect(ui->clearBut, &QPushButton::clicked, this,
@@ -29,6 +36,8 @@ MainWindow::MainWindow(QWidget* parent)
           &MainWindow::onShowGraphClicked);
   connect(ui->historyListWidget, &QListWidget::itemClicked, this,
           &MainWindow::onHistoryItemClicked);
+  connect(ui->paramsButton, &QPushButton::clicked,
+          this, &MainWindow::onParamsButtonClicked);
 }
 
 MainWindow::~MainWindow() {
@@ -44,46 +53,78 @@ void MainWindow::cleanupSolver() {
 }
 
 void MainWindow::onSendButtonClicked() {
-  QString inputText = ui->inputLineEdit->text().trimmed();
-
-  if (inputText.isEmpty()) {
-    QMessageBox::warning(this, "Ошибка", "Поле ввода пустое!");
-    return;
-  }
-
-  cleanupSolver();
-  needGraphUpdate = true;
-
-  try {
-    cleanupSolver();
-    // Создаем решатель
-    solverHandle = CreateNelderMead(inputText.toStdString().c_str());
-
-    // Определяем размерность задачи
-    int MAX_DIMS = getDims(solverHandle);
-    double* testOutput = (double*)malloc(MAX_DIMS * sizeof(double));
-    SolveBasic(solverHandle, testOutput);
-
-    // Получаем результат
-    std::vector<double> result(MAX_DIMS);
-    double funcValue;
-    SolveWithValue(solverHandle, result.data(), &funcValue);
-
-    // Формируем строку результата
-    QString resultStr;
-    for (size_t i = 0; i < result.size() && result[i] != 0; ++i) {
-      if (i > 0) resultStr += ", ";
-      resultStr += QString("x%1 = %2").arg(i + 1).arg(result[i]);
+    QString inputText = ui->inputLineEdit->text().trimmed();
+    if (inputText.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "Введите функцию");
+        return;
     }
-    resultStr += QString("\nЗначение функции: %1").arg(funcValue);
 
-    ui->outputLineEdit->setText(resultStr);
-    addToHistory(inputText + " → " + resultStr);
+    cleanupSolver();
+    needGraphUpdate = true;
 
-  } catch (const std::exception& e) {
-    QMessageBox::critical(this, "Ошибка",
-                          QString("Ошибка вычисления: %1").arg(e.what()));
-  }
+    try {
+        solverHandle = CreateNelderMead(inputText.toStdString().c_str());
+        int dims = getDims(solverHandle);
+        std::vector<double> result(dims);
+        double funcValue = 0.0;
+
+        if (!startPoint.isEmpty()) {
+            // Разбиваем строку точки на координаты
+            QStringList coords = startPoint.split(" ", Qt::SkipEmptyParts);
+            if (coords.size() != dims) {
+                throw std::runtime_error(
+                    QString("Требуется %1 координат").arg(dims).toStdString()
+                    );
+            }
+
+            std::vector<double> initPoint;
+            for (const QString& coord : coords) {
+                initPoint.push_back(coord.toDouble());
+            }
+
+            SolveFullKoefs(solverHandle, initPoint.data(), alpha, beta,
+                           gamma, sigma, result.data(), &funcValue);
+        } else {
+            SolveWithKoefs(solverHandle, alpha, beta, gamma, sigma,
+                           result.data(), &funcValue);
+        }
+
+        // Формирование результата
+        QString resultStr;
+        for (size_t i = 0; i < result.size() && result[i] != 0; ++i) {
+            if (i > 0) resultStr += ", ";
+            resultStr += QString("x%1 = %2").arg(i+1).arg(result[i]);
+        }
+        resultStr += QString("\nf(x) = %1").arg(funcValue);
+
+        ui->outputLineEdit->setText(resultStr);
+        addToHistory(inputText + " → " + resultStr);
+
+    } catch (const std::exception& e) {
+        QMessageBox::critical(this, "Ошибка", QString("Ошибка: %1").arg(e.what()));
+        cleanupSolver();
+    }
+}
+
+void MainWindow::onParamsButtonClicked() {
+    if (!paramsDialog) {
+        paramsDialog = new ParametersDialog(this);
+    }
+
+    // Установка текущих значений
+    paramsDialog->setAlpha(alpha);
+    paramsDialog->setBeta(beta);
+    paramsDialog->setGamma(gamma);
+    paramsDialog->setSigma(sigma);
+    paramsDialog->setStartPoint(startPoint);
+
+    if (paramsDialog->exec() == QDialog::Accepted) {
+        alpha = paramsDialog->getAlpha();
+        beta = paramsDialog->getBeta();
+        gamma = paramsDialog->getGamma();
+        sigma = paramsDialog->getSigma();
+        startPoint = paramsDialog->getStartPoint();
+    }
 }
 
 void MainWindow::onShowGraphClicked() {
