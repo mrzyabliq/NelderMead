@@ -2,7 +2,17 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
+#ifdef _WIN32
+#ifdef NELDERMEAD_EXPORTS
+#define NELDERMEAD_API __declspec(dllexport)
+#else
+#define NELDERMEAD_API __declspec(dllimport)
+#endif
+#else
+#define NELDERMEAD_API __attribute__((visibility("default")))
+#endif
 
 enum class Typess {
   Number,
@@ -34,7 +44,7 @@ class Parser {
   Parser() = default;
 
   double calc(std::unordered_map<std::string, double> variables);
-  int num_of_variables = expression_parsed.size();
+  int num_of_variables=0;
 
  private:
   void Parse();
@@ -47,7 +57,22 @@ class Parser {
   double calc_exp_mult();
   double calc_exp_raise();
   double calc_end();
-
+  std::set<int> variables_set;
   std::unordered_map<std::string, double> var_nums;
   int pos = 0;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct ParserHandle ParserHandle;
+
+NELDERMEAD_API ParserHandle* CreateParser(const char* expr);
+NELDERMEAD_API double ParserCalc(ParserHandle* handle, const char* variable_names[], double variable_values[], int count);
+NELDERMEAD_API void DestroyParser(ParserHandle* handle);
+
+
+#ifdef __cplusplus
+}
+#endif

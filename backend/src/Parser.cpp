@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "pch.h"
+
 using namespace std;
 
 Parser::Parser(string expression) {
@@ -27,6 +27,8 @@ double Parser::calc(unordered_map<string, double> variables) {
 }
 
 void Parser::Parse() {
+  if(this->expression.size() == 0)
+    throw runtime_error("Empty expression");
   int cur_pos = 0;
   while (cur_pos < this->expression.size()) {
     char c = expression[cur_pos];
@@ -38,33 +40,37 @@ void Parser::Parse() {
       cur_pos = parse_expression(cur_pos);
     else {
       switch (c) {
-      case '+':
-        expression_parsed.push_back({Typess::Plus});
-        break;
-      case '-':
-        expression_parsed.push_back({Typess::Minus});
-        break;
-      case '*':
-        expression_parsed.push_back({Typess::Multiply});
-        break;
-      case '/':
-        expression_parsed.push_back({Typess::Divide});
-        break;
-      case '^':
-        expression_parsed.push_back({Typess::Raise});
-        break;
-      case '(':
-        expression_parsed.push_back({Typess::LParenthesis});
-        break;
-      case ')':
-        expression_parsed.push_back({Typess::RParenthesis});
-        break;
-      default:
-        throw runtime_error("Invalid character");
+        case '+':
+          expression_parsed.push_back({Typess::Plus});
+          break;
+        case '-':
+          expression_parsed.push_back({Typess::Minus});
+          break;
+        case '*':
+          expression_parsed.push_back({Typess::Multiply});
+          break;
+        case '/':
+          expression_parsed.push_back({Typess::Divide});
+          break;
+        case '^':
+          expression_parsed.push_back({Typess::Raise});
+          break;
+        case '(':
+          expression_parsed.push_back({Typess::LParenthesis});
+          break;
+        case ')':
+          expression_parsed.push_back({Typess::RParenthesis});
+          break;
+        default:
+          throw runtime_error("Invalid character");
       }
       cur_pos++;
     }
+    num_of_variables = variables_set.size();
   }
+  if(expression_parsed.size() == 0 && num_of_variables == 0)
+    throw runtime_error("Empty expression");
+
 }
 
 void Parser::next_pos() {
@@ -126,18 +132,12 @@ double Parser::calc_end() {
     next_pos();
     double arg = calc_end();
 
-    if (func_name == "sin")
-      return std::sin(arg);
-    if (func_name == "cos")
-      return std::cos(arg);
-    if (func_name == "tan")
-      return std::tan(arg);
-    if (func_name == "exp")
-      return std::exp(arg);
-    if (func_name == "abs")
-      return std::abs(arg);
-    if (func_name == "sqrt")
-      return std::sqrt(arg);
+    if (func_name == "sin") return std::sin(arg);
+    if (func_name == "cos") return std::cos(arg);
+    if (func_name == "tan") return std::tan(arg);
+    if (func_name == "exp") return std::exp(arg);
+    if (func_name == "abs") return std::abs(arg);
+    if (func_name == "sqrt") return std::sqrt(arg);
   }
   if (expression_parsed[pos].type == Typess::Variable) {
     double value = var_nums["x" + to_string(expression_parsed[pos].index)];
@@ -182,6 +182,8 @@ int Parser::parse_num(int cur_pos) {
     }
     cur_pos++;
   }
+  if(expression[cur_pos - 1] == '.')
+    throw runtime_error("Invalid number");
   num = (double)num / nums_after_dot;
   expression_parsed.push_back({Typess::Number, num});
   return cur_pos;
@@ -197,17 +199,18 @@ int Parser::parse_expression(int cur_pos) {
       num += expression[cur_pos] - '0';
       cur_pos++;
     }
-    num_of_variables++;
+    variables_set.insert(num);
     expression_parsed.push_back({Typess::Variable, 0.0, num});
     return cur_pos;
   }
-  while (cur_pos < expression.size() && isalnum(expression[cur_pos]))
-    cur_pos++;
+
+  while (cur_pos < expression.size() && isalnum(expression[cur_pos])) cur_pos++;
   string name = expression.substr(start_pos, cur_pos - start_pos);
   if (name == "sin" || name == "cos" || name == "tan" || name == "cotan" ||
       name == "exp" || name == "abs" || name == "sqrt")
     expression_parsed.push_back({Typess::Function, 0.0, 0, name});
-
+  
+  if(name == "pi") expression_parsed.push_back({Typess::Number, 3.141592653589793});
   return cur_pos;
 }
 
@@ -216,40 +219,67 @@ int Parser::parse_arg(int cur_pos) {
          (expression[cur_pos] == '(' || expression[cur_pos] == ' '))
     cur_pos++;
   if (cur_pos == expression.size())
-    throw runtime_error("Ivalid argument of function");
+    throw runtime_error("Invalid argument of function");
   int start_pos = cur_pos;
-  while (cur_pos < expression.size() && expression[cur_pos] != ')')
-    cur_pos++;
-  if (cur_pos == expression.size())
-    throw runtime_error("Invalid argument");
+  while (cur_pos < expression.size() && expression[cur_pos] != ')') cur_pos++;
+  if (cur_pos == expression.size()) throw runtime_error("Invalid argument");
   string sub_expression = expression.substr(start_pos, cur_pos - start_pos);
   expression_parsed.push_back({Typess::Argument, 0.0, 0, sub_expression});
   return cur_pos;
 }
 
-struct ParserHandle {
-  std::unordered_map<std::string, double> variables;
-  Parser parser;
-
-  ParserHandle(const char *expr) : parser(expr) {}
-};
-
+// C-интерфейс для Parser
+#ifdef __cplusplus
 extern "C" {
-ParserHandle *CreateParser(const char *expression) {
-  return new ParserHandle(expression);
-}
+#endif
 
-void SetVariable(ParserHandle *handle, const char *name, double value) {
-  if (handle) {
-    handle->variables[name] = value;
-  }
-}
+ParserHandle* CreateParser(const char* expr) {
+        return reinterpret_cast<ParserHandle*>(new Parser(std::string(expr)));
+    }
 
-double Evaluate(ParserHandle *handle) {
-  if (!handle)
-    return NAN;
-  return handle->parser.calc(handle->variables);
-}
+    double ParserCalc(ParserHandle* handle, const char* variable_names[], double variable_values[], int count) {
+        if (!handle) return NAN;
+        
+        Parser* p = reinterpret_cast<Parser*>(handle);
+        std::unordered_map<std::string, double> vars;
+        
+        for (int i = 0; i < count; ++i) {
+            vars[variable_names[i]] = variable_values[i];
+        }
+        
+        return p->calc(vars);
+    }
 
-void DestroyParser(ParserHandle *handle) { delete handle; }
+    void DestroyParser(ParserHandle* handle) {
+        delete reinterpret_cast<Parser*>(handle);
+    }
+
+#ifdef __cplusplus
 }
+#endif
+
+// struct ParserHandle {
+//   std::unordered_map<std::string, double> variables;
+//   Parser parser;
+
+//   ParserHandle(const char *expr) : parser(expr) {}
+// };
+
+// extern "C" {
+// ParserHandle *CreateParser(const char *expression) {
+//   return new ParserHandle(expression);
+// }
+
+// void SetVariable(ParserHandle *handle, const char *name, double value) {
+//   if (handle) {
+//     handle->variables[name] = value;
+//   }
+// }
+
+// double Evaluate(ParserHandle *handle) {
+//   if (!handle) return NAN;
+//   return handle->parser.calc(handle->variables);
+// }
+
+// void DestroyParser(ParserHandle *handle) { delete handle; }
+// }
