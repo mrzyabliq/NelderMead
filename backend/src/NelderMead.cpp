@@ -65,35 +65,24 @@ NelderMead::NelderMead(string expression) {
 X NelderMead::Solver(double tolerance = 0.000001, double alpha = 1,
                      double beta = 0.5, double gamma = 2, double sigma = 1) {
   symplex = {};
-  initKoefs(alpha, beta, gamma, sigma);
-  clearHistory();
   startPoint();
-  Sort();
-  int i = 0;
-  startLogFile();
-  savePointsToLog(i);
-  saveHistory();
-  while (i < 100000) {
-    chooseBest();
-    Sort();
-    saveHistory();
-    if (abs(symplex.back().value - symplex[0].value) <= tolerance) break;
-    i++;
-    savePointsToLog(i);
-  }
-  finishLog();
-  return symplex[dims];
+  return solverProcessing(tolerance, alpha, beta, gamma, sigma);
 }
 X NelderMead::Solver(vector<double> init_point, double tolerance = 0.000001,
                      double alpha = 1, double beta = 0.5, double gamma = 2,
                      double sigma = 1) {
   symplex = {};
+  startPoint(init_point);
+  return solverProcessing(tolerance, alpha, beta, gamma, sigma);
+}
+X NelderMead::solverProcessing(double tolerance = 0.000001, double alpha = 1,
+                               double beta = 0.5, double gamma = 2,
+                               double sigma = 1) {
   initKoefs(alpha, beta, gamma, sigma);
   clearHistory();
-  startPoint(init_point);
   Sort();
-  int i = 0;
   startLogFile();
+  int i = 0;
   savePointsToLog(i);
   saveHistory();
   while (i < 100000) {
@@ -254,9 +243,7 @@ void NelderMead::initKoefs(double alpha, double beta, double gamma,
   this->gamma = gamma;
   this->sigma = sigma;
 }
-int NelderMead::getIterations() {
-  return history.size();
-} 
+int NelderMead::getIterations() { return history.size(); }
 
 // C-интерфейс для NelderMead
 #ifdef __cplusplus
@@ -303,22 +290,24 @@ void SolveFull(NelderMeadHandle* handle, double* coordinates, double* output,
   copy(result.coordinates.begin(), result.coordinates.end(), output);
   *value = result.value;
 }
-void SolveWithKoefs(NelderMeadHandle* handle,double tolerance, double alpha, double beta,
-                    double gamma, double sigma, double* output, double* value) {
+void SolveWithKoefs(NelderMeadHandle* handle, double tolerance, double alpha,
+                    double beta, double gamma, double sigma, double* output,
+                    double* value) {
   if (!handle || !output) return;
-  X result = handle->solver->Solver(tolerance,alpha , beta, gamma, sigma);
+  X result = handle->solver->Solver(tolerance, alpha, beta, gamma, sigma);
   copy(result.coordinates.begin(), result.coordinates.end(), output);
   *value = result.value;
 }
-void SolveFullKoefs(NelderMeadHandle* handle, double* coordinates, double tolerance, double alpha,
-                    double beta, double gamma, double sigma, double* output,
-                    double* value) {
+void SolveFullKoefs(NelderMeadHandle* handle, double* coordinates,
+                    double tolerance, double alpha, double beta, double gamma,
+                    double sigma, double* output, double* value) {
   if (!handle || !output) return;
   vector<double> input;
   for (int i = 0; i < handle->solver->getDims(); i++) {
     input.push_back(coordinates[i]);
   }
-  X result = handle->solver->Solver(input,tolerance, alpha, beta, gamma, sigma);
+  X result =
+      handle->solver->Solver(input, tolerance, alpha, beta, gamma, sigma);
   copy(result.coordinates.begin(), result.coordinates.end(), output);
   *value = result.value;
 }

@@ -37,6 +37,7 @@ class NELDERMEAD_API NelderMead {
   NelderMead(std::string expression);
   X Solver(double tolerance, double alpha, double beta, double gamma, double sigma);
   X Solver(std::vector<double> init_point, double tolerance, double alpha, double beta, double gamma, double sigma);
+  X solverProcessing(double tolerance, double alpha, double beta, double gamma, double sigma);
   int getDims();
   int getIterations();
   std::vector<X> pointsForGraph();
