@@ -82,10 +82,10 @@ void MainWindow::onSendButtonClicked() {
                 initPoint.push_back(coord.toDouble());
             }
 
-            SolveFullKoefs(solverHandle, initPoint.data(), alpha, beta,
+            SolveFullKoefs(solverHandle, initPoint.data(),tolerance, alpha, beta,
                            gamma, sigma, result.data(), &funcValue);
         } else {
-            SolveWithKoefs(solverHandle, alpha, beta, gamma, sigma,
+            SolveWithKoefs(solverHandle, tolerance, alpha, beta, gamma, sigma,
                            result.data(), &funcValue);
         }
 
@@ -134,18 +134,13 @@ void MainWindow::onShowGraphClicked() {
   }
 
   try {
-    const int MAX_POINTS = 1000;
-    double output[MAX_POINTS] = {0};
-
+    int dims  = getIterations(solverHandle);
+    std::vector<double> history(dims);
+    int MAX_POINTS = 100000;
     // Передаём output и MAX_POINTS в функцию
-    GetPointsForGraph(solverHandle, output, MAX_POINTS);
+    GetPointsForGraph(solverHandle, history.data(), MAX_POINTS);
 
     // Собираем данные для графика (игнорируем нули)
-    std::vector<double> history;
-    for (int i = 0; i < MAX_POINTS && output[i] != 0; ++i) {
-      history.push_back(output[i]);
-    }
-
     if (history.empty()) {
       QMessageBox::information(
           this, "Информация",

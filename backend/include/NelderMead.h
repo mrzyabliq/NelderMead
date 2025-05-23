@@ -38,6 +38,7 @@ class NELDERMEAD_API NelderMead {
   X Solver(double tolerance, double alpha, double beta, double gamma, double sigma);
   X Solver(std::vector<double> init_point, double tolerance, double alpha, double beta, double gamma, double sigma);
   int getDims();
+  int getIterations();
   std::vector<X> pointsForGraph();
   std::vector<double> getHistory();
 
@@ -82,17 +83,18 @@ NELDERMEAD_API void SolveWithValue(NelderMeadHandle* handle, double* output,
                                    double* value);
 NELDERMEAD_API void SolveInit(NelderMeadHandle* handle, double* coordinates,
                               double* output);
-NELDERMEAD_API void SolveWithKoefs(NelderMeadHandle* handle, double alpha, double beta,
+NELDERMEAD_API void SolveWithKoefs(NelderMeadHandle* handle, double tolerance, double alpha, double beta,
                     double gamma, double sigma, double* output, double* value);
 NELDERMEAD_API void SolveFull(NelderMeadHandle* handle, double* coordinates,
                               double* output, double* value);
-NELDERMEAD_API void SolveFullKoefs(NelderMeadHandle* handle, double* coordinates, double alpha,
+NELDERMEAD_API void SolveFullKoefs(NelderMeadHandle* handle, double* coordinates, double tolerance, double alpha,
                     double beta, double gamma, double sigma, double* output,
                     double* value);
 NELDERMEAD_API void DestroyNelderMead(NelderMeadHandle* handle);
 NELDERMEAD_API void GetPointsForGraph(NelderMeadHandle* handle, double* output,
                                       int maxSize);
 NELDERMEAD_API int getDims(NelderMeadHandle* handle);
+NELDERMEAD_API int getIterations(NelderMeadHandle* handle);
 #ifdef __cplusplus
 }
 #endif
