@@ -91,7 +91,7 @@ void MainWindow::onSendButtonClicked() {
 
         // Формирование результата
         QString resultStr;
-        for (size_t i = 0; i < result.size() && result[i] != 0; ++i) {
+        for (size_t i = 0; i < result.size(); ++i) {
             if (i > 0) resultStr += ", ";
             resultStr += QString("x%1 = %2").arg(i+1).arg(result[i]);
         }
