@@ -14,6 +14,7 @@ Symplex::Symplex(vector<double> init_point, string expression,
     : start_point(init_point),
       function(expression),
       dims(function.num_of_variables),
+      koefs(koef),
       symplex(initSymplex()) {};
 void Symplex::sort() { std::sort(symplex.rbegin(), symplex.rend()); }
 vector<X> Symplex::getSymplex() {return symplex;}
