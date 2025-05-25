@@ -13,6 +13,8 @@ ParametersDialog::ParametersDialog(QWidget *parent)
 
     // Настройка валидаторов
     QDoubleValidator *validator = new QDoubleValidator(this);
+    validator->setLocale(QLocale::English);
+    validator->setNotation(QDoubleValidator::StandardNotation);
     alphaEdit->setValidator(validator);
     betaEdit->setValidator(validator);
     gammaEdit->setValidator(validator);

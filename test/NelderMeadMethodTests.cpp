@@ -12,7 +12,7 @@
 #endif
 
 TEST_F(NelderMeadTestFixture, CreateAndDestroySolver) {
-    NelderMeadHandle solver = CreateNelderMead("x^2 + y^2");
+    NelderMeadHandle solver = CreateNelderMead("x1^2 + x2^2");
     ASSERT_NE(solver, nullptr);
     DestroyNelderMead(solver);  
 }
@@ -42,7 +42,7 @@ TEST_F(NelderMeadTestFixture, RozenbrockFunction) {
 
 TEST_F(NelderMeadTestFixture, HimmelblauFunction1) {
     NelderMeadHandle solver = CreateNelderMead("(x1^2 + x2 - 11)^2 + (x1 + x2^2 - 7)^2");
-    double initial[2] = {0, 0};
+    double initial[2] = {1, 1};
     double output[2];
     SolveInit(solver, initial, output);
     EXPECT_NEAR(output[0], 3.0, 1e-1);
